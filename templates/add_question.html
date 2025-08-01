@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Question</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <h2>Add a Question</h2>
+
+    <a href="/add_info">
+        <button type="button">Add Publication</button>
+    </a>
+    <br><br>
+
+    <form method="POST" action="/add_question">
+        <!-- Publication -->
+        <label>Publication:</label>
+        <select name="publication" id="publication" required>
+            <option value="">Select Publication</option>
+            {% for pub in publications %}
+            <option value="{{ pub }}">{{ pub }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Subject -->
+        <label>Subject:</label>
+        <select name="subject" id="subject" required disabled>
+            <option value="">Select Subject</option>
+        </select><br><br>
+
+        <!-- Class -->
+        <label>Class:</label>
+        <select name="class" id="class" required disabled>
+            <option value="">Select Class</option>
+        </select><br><br>
+
+        <!-- Chapter -->
+        <label>Chapter:</label>
+        <select name="chapter" id="chapter" required disabled>
+            <option value="">Select Chapter</option>
+        </select><br><br>
+
+        <!-- Question Type -->
+        <label>Question Type:</label>
+        <select name="qtype" required onchange="toggleFields(this.value)">
+            <option value="Fill in the Blanks">Fill in the Blanks</option>
+            <option value="True/False">True/False</option>
+            <option value="Match the Following">Match the Following</option>
+            <option value="Choose the Best Answer">Choose the Best Answer</option>
+            <option value="Answer the Following">Answer the Following</option>
+            <option value="Full Form">Full Form</option>
+        </select><br><br>
+
+        <!-- Normal Question -->
+        <div id="normal_question_div">
+            <label>Question(s):</label><br>
+            <textarea name="normal_question" rows="3" cols="50"></textarea><br><br>
+        </div>
+
+        <!-- Match Fields -->
+        <div id="match_fields_div" style="display:none;">
+            <label>Match Key:</label><br>
+            <input type="text" name="match_key"><br><br>
+            <label>Match Value:</label><br>
+            <input type="text" name="match_value"><br><br>
+        </div>
+
+        <!-- Choose Best Answer -->
+        <div id="choose_best_answer_div" style="display:none;">
+            <label>Question:</label><br>
+            <textarea name="best_answer_question" rows="3" cols="50"></textarea><br><br>
+            <label>Option 1:</label><br><input type="text" name="option1"><br><br>
+            <label>Option 2:</label><br><input type="text" name="option2"><br><br>
+            <label>Option 3:</label><br><input type="text" name="option3"><br><br>
+            <label>Option 4:</label><br><input type="text" name="option4"><br><br>
+            <label>Correct Answer:</label><br><input type="text" name="answer"><br><br>
+        </div>
+
+        <button type="submit">Add Question</button>
+        <a href="{{ url_for('index') }}">
+            <button type="button">Home</button>
+    </form>
+
+
+    </a>
+
+
+    <!-- JS for Dynamic Dropdowns -->
+    <script>
+        function toggleFields(value) {
+            document.getElementById("normal_question_div").style.display =
+                (value === "Choose the Best Answer" || value === "Match the Following") ? "none" : "block";
+            document.getElementById("match_fields_div").style.display =
+                (value === "Match the Following") ? "block" : "none";
+            document.getElementById("choose_best_answer_div").style.display =
+                (value === "Choose the Best Answer") ? "block" : "none";
+        }
+
+        $(document).ready(function () {
+            // Publication -> Subject
+            $('#publication').change(function () {
+                const pub = $(this).val();
+                $('#subject').prop('disabled', true).html('<option>Loading...</option>');
+                $('#class').prop('disabled', true).html('<option>Select Class</option>');
+                $('#chapter').prop('disabled', true).html('<option>Select Chapter</option>');
+
+                if (pub) {
+                    $.getJSON('/get_subjects/' + encodeURIComponent(pub), function (data) {
+                        let options = '<option value="">Select Subject</option>';
+                        $.each(data.subjects, function (i, val) {
+                            options += `<option value="${val}">${val}</option>`;
+                        });
+                        $('#subject').html(options).prop('disabled', false);
+                    });
+                }
+            });
+
+            // Subject -> Class
+            $('#subject').change(function () {
+                const pub = $('#publication').val();
+                const sub = $(this).val();
+                $('#class').prop('disabled', true).html('<option>Loading...</option>');
+                $('#chapter').prop('disabled', true).html('<option>Select Chapter</option>');
+
+                if (pub && sub) {
+                    $.getJSON(`/get_classes/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}`, function (data) {
+                        let options = '<option value="">Select Class</option>';
+                        $.each(data.classes, function (i, val) {
+                            options += `<option value="${val}">${val}</option>`;
+                        });
+                        $('#class').html(options).prop('disabled', false);
+                    });
+                }
+            });
+
+            // Class -> Chapter
+            $('#class').change(function () {
+                const pub = $('#publication').val();
+                const sub = $('#subject').val();
+                const cls = $(this).val();
+                $('#chapter').prop('disabled', true).html('<option>Loading...</option>');
+
+                if (pub && sub && cls) {
+                    $.getJSON(`/get_chapters/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}/${encodeURIComponent(cls)}`, function (data) {
+                        let options = '<option value="">Select Chapter</option>';
+                        $.each(data.chapters, function (i, val) {
+                            options += `<option value="${val}">${val}</option>`;
+                        });
+                        $('#chapter').html(options).prop('disabled', false);
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>

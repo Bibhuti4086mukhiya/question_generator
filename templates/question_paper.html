@@ -1,0 +1,93 @@
+<h2>Question Paper</h2>
+<p><strong>Subject:</strong> {{ subject }}</p>
+<p><strong>Total Marks:</strong> {{ total_marks }}</p>
+
+{% set qno = 1 %}
+
+{% if questions["Fill in the Blanks"] %}
+<h3>{{ qno }}. Fill in the Blanks [{{ counts["Fill in the Blanks"] }} x {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }}]</h3>
+<ol>
+    {% for q in questions["Fill in the Blanks"] %}
+    <li>{{ q }}</li>
+    {% endfor %}
+</ol>
+{% set qno = qno + 1 %}
+{% endif %}
+
+{% if questions["True/False"] %}
+<h3>{{ qno }}. True/False [{{ counts["True/False"] }} x {{ marks["True/False"] }} = {{ counts["True/False"] * marks["True/False"] }}]</h3>
+<ol>
+    {% for q in questions["True/False"] %}
+    <li>{{ q }}</li>
+    {% endfor %}
+</ol>
+{% set qno = qno + 1 %}
+{% endif %}
+
+
+{% if questions["Match the Following"] %}
+<h3>{{ qno }}. Match the Following [{{ counts["Match the Following"] }} x {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }}]</h3>
+<table style="width: 80%; border-collapse: collapse; margin: 20px 0;">
+  <thead>
+    <tr style="background-color: #f9f9f9;">
+      <th style="padding: 8px; text-align: left;">Column A</th>
+      <th style="padding: 8px; text-align: left;">Column B</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for left, right in questions["Match the Following"] %}
+    <tr>
+      <td style="padding: 8px;">{{ left }}</td>
+      <td style="padding: 8px;">{{ right }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% set qno = qno + 1 %}
+{% endif %}
+
+
+{% if questions["Choose the Best Answer"] %}
+<h3>{{ qno }}. Choose the Best Answer [{{ counts["Choose the Best Answer"] }} x {{ marks["Choose the Best Answer"] }} = {{ counts["Choose the Best Answer"] * marks["Choose the Best Answer"] }}]</h3>
+<ol>
+    {% for q in questions["Choose the Best Answer"] %}
+    <li>{{ q.question }}<br>
+        a. {{ q.options[0] }}&nbsp;&nbsp;
+        b. {{ q.options[1] }}&nbsp;&nbsp;
+        c. {{ q.options[2] }}&nbsp;&nbsp;
+        d. {{ q.options[3] }}
+    </li><br>
+    {% endfor %}
+</ol>
+{% set qno = qno + 1 %}
+{% endif %}
+
+{% if questions["Full Form"] %}
+<h3>{{ qno }}. Full Form [{{ counts["Full Form"] }} x {{ marks["Full Form"] }} = {{ counts["Full Form"] * marks["Full Form"] }}]</h3>
+<ol>
+    {% for abbr in questions["Full Form"] %}
+        <li>{{ abbr }}</li>
+    {% endfor %}
+</ol>
+{% set qno = qno + 1 %}
+{% endif %}
+
+{% if questions["Manual Questions"] %}
+    <h3>{{ qno }}. write your view[{{ counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ counts["Manual Questions"] * marks["Manual Questions"] }}]
+    <ol type="a">
+        {% for question in questions["Manual Questions"] %}
+        <li>{{ question }} </li>
+        {% endfor %}
+    </ol>
+    </h3>
+{% set qno = qno + 1 %}
+{% endif %}
+
+{% if questions["Answer the Following"] %}
+<h3>{{ qno }}. Answer the Following [{{ counts["Answer the Following"] }} x {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }}]</h3>
+<ol>
+    {% for q in questions["Answer the Following"] %}
+    <li>{{ q }}</li>
+    {% endfor %}
+</ol>
+{% endif %}
