@@ -9,13 +9,25 @@
 <body>
     <h2>Generate Question Paper</h2>
 
-    <a href="/add_info">
-        <button type="button" style="margin-right:15px;">Add Publication</button>
-    </a>
+    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
 
-    <a href="{{ url_for('add_question') }}">
-        <button type="button">Add Question</button>
-    </a>
+        <a href="{{ url_for('add_info') }}">
+            <button type="button">Add Publication</button>
+        </a>
+
+        <a href="{{ url_for('add_question') }}">
+            <button type="button">Add Question</button>
+        </a>
+
+        <a href="{{ url_for('rename_page') }}">
+            <button type="button">Rename Publication</button>
+        </a>
+
+        <a href="{{ url_for('rename_question') }}">
+            <button type="button"> update Question</button>
+        </a>
+
+    </div>
 
     <br><br>
     <form method="POST" action="/generate" id="question-form">

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Rename Keys</title>
+</head>
+
+<body>
+    <h2>Rename Publication, Subject, Class, or Chapter</h2>
+
+    <form method="POST">
+
+        <!-- Publication -->
+        <label>Old Publication:</label>
+        <select name="old_publication" id="old_publication" onchange="loadSubjects()" required>
+            <option value="" disabled selected>--Select Publication--</option>
+            {% for pub in publications %}
+            <option value="{{ pub }}">{{ pub }}</option>
+            {% endfor %}
+        </select>
+        <input type="text" name="new_publication" placeholder="Enter new Publication name (only if renaming)">
+        <br><br>
+
+        <!-- Subject (optional) -->
+        <label>Old Subject:</label>
+        <select name="old_subject" id="old_subject" onchange="loadClasses()">
+            <option value="" selected>--Select Subject (only if renaming)--</option>
+        </select>
+        <input type="text" name="new_subject" placeholder="Enter new Subject name (optional)">
+        <br><br>
+
+        <!-- Class (optional) -->
+        <label>Old Class:</label>
+        <select name="old_class_name" id="old_class" onchange="loadChapters()">
+            <option value="" selected>--Select Class (only if renaming)--</option>
+        </select>
+        <input type="text" name="new_class_name" placeholder="Enter new Class name (optional)">
+        <br><br>
+
+        <!-- Chapter (optional) -->
+        <label>Old Chapter:</label>
+        <select name="old_chapter" id="old_chapter">
+            <option value="" selected>--Select Chapter (only if renaming)--</option>
+        </select>
+        <input type="text" name="new_chapter" placeholder="Enter new Chapter name (optional)">
+        <br><br>
+
+        <!-- Submit -->
+        <button type="submit">
+            Rename
+        </button>
+        <a href="{{ url_for('index') }}">
+            <button type="button">Home</button>
+    </form>
+
+    <script>
+        const jsonData = {{ data | tojson }};
+        function loadSubjects() {
+            const pub = document.getElementById('old_publication').value;
+            const subjects = pub ? Object.keys(jsonData[pub]) : [];
+            let options = '<option value="" disabled selected>--Select Subject (only if renaming)--</option>';
+            subjects.forEach(s => options += `<option value="${s}">${s}</option>`);
+            document.getElementById('old_subject').innerHTML = options;
+            document.getElementById('old_class').innerHTML = '<option value="" selected>--Select Class (only if renaming)--</option>';
+            document.getElementById('old_chapter').innerHTML = '<option value="" selected>--Select Chapter (only if renaming)--</option>';
+        }
+        function loadClasses() {
+            const pub = document.getElementById('old_publication').value;
+            const sub = document.getElementById('old_subject').value;
+            const classes = (pub && sub) ? Object.keys(jsonData[pub][sub]) : [];
+            let options = '<option value="" disabled selected>--Select Class (only if renaming)--</option>';
+            classes.forEach(c => options += `<option value="${c}">${c}</option>`);
+            document.getElementById('old_class').innerHTML = options;
+            document.getElementById('old_chapter').innerHTML = '<option value="" selected>--Select Chapter (only if renaming)--</option>';
+        }
+        function loadChapters() {
+            const pub = document.getElementById('old_publication').value;
+            const sub = document.getElementById('old_subject').value;
+            const cls = document.getElementById('old_class').value;
+            const chapters = (pub && sub && cls) ? Object.keys(jsonData[pub][sub][cls]) : [];
+            let options = '<option value="" disabled selected>--Select Chapter (only if renaming)--</option>';
+            chapters.forEach(ch => options += `<option value="${ch}">${ch}</option>`);
+            document.getElementById('old_chapter').innerHTML = options;
+        }
+    </script>
+</body>
+
+</html>

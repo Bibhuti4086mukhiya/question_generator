@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Rename Question</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    select, input, button { margin: 5px 0; padding: 6px; }
+    .hidden { display: none; }
+    .box { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Rename Question</h2>
+
+  <form method="POST">
+    <!-- Publication -->
+    <label>Publication:</label>
+    <select name="publication" id="pub" onchange="loadSubjects()" required></select><br>
+
+    <!-- Subject -->
+    <label>Subject:</label>
+    <select name="subject" id="sub" onchange="loadClasses()" required></select><br>
+
+    <!-- Class -->
+    <label>Class:</label>
+    <select name="class_name" id="cls" onchange="loadChapters()" required></select><br>
+
+    <!-- Chapter -->
+    <label>Chapter:</label>
+    <select name="chapter" id="chap" onchange="loadQtypes()" required></select><br>
+
+    <!-- Question Type -->
+    <label>Type:</label>
+    <select name="qtype" id="qtype" onchange="loadQuestions()" required></select><br>
+
+    <!-- Old Question -->
+    <label>Old Question:</label>
+    <select name="old_question" id="old_q" required></select><br>
+
+    <!-- Dynamic rename fields -->
+    <div id="rename_fields">
+      <!-- Fill in the Blanks / True/False / Answer / Manual -->
+      <div id="f_simple" class="box hidden">
+        <input type="text" name="new_question" placeholder="New Question">
+      </div>
+
+      <!-- Match the Following -->
+      <div id="f_match" class="box hidden">
+        <input type="text" name="new_left" placeholder="New Left (e.g., CPU)">
+        <input type="text" name="new_right" placeholder="New Right (e.g., Brain of Computer)">
+      </div>
+
+      <!-- Choose the Best Answer -->
+      <div id="f_mcq" class="box hidden">
+        <input type="text" name="new_question_mcq" placeholder="New Question"><br>
+        <input type="text" name="option1" placeholder="Option A">
+        <input type="text" name="option2" placeholder="Option B">
+        <input type="text" name="option3" placeholder="Option C">
+        <input type="text" name="option4" placeholder="Option D"><br>
+        <input type="text" name="answer" placeholder="Correct Answer">
+      </div>
+
+      <!-- Full Form -->
+      <div id="f_full" class="box hidden">
+        <input type="text" name="new_abbr" placeholder="Abbreviation (e.g., CPU)">
+        <input type="text" name="new_full" placeholder="Full Form (e.g., Central Processing Unit)">
+      </div>
+    </div>
+
+    <br>
+    <button type="submit">Rename</button>
+
+    <a href="{{ url_for('index') }}">
+      <button type="button">Home</button></a>
+  </form>
+
+  <script>
+    const data = {{ data | tojson }};
+
+    function loadSubjects(){
+      const pub = document.getElementById("pub").value;
+      const subs = pub ? Object.keys(data[pub]) : [];
+      fillSelect("sub", subs); reset(["cls","chap","qtype","old_q"]);
+    }
+    function loadClasses(){
+      const pub = document.getElementById("pub").value;
+      const sub = document.getElementById("sub").value;
+      const cls = (pub && sub) ? Object.keys(data[pub][sub]) : [];
+      fillSelect("cls", cls); reset(["chap","qtype","old_q"]);
+    }
+    function loadChapters(){
+      const pub = document.getElementById("pub").value;
+      const sub = document.getElementById("sub").value;
+      const cls = document.getElementById("cls").value;
+      const chaps = (pub && sub && cls) ? Object.keys(data[pub][sub][cls]) : [];
+      fillSelect("chap", chaps); reset(["qtype","old_q"]);
+    }
+    function loadQtypes(){
+      const pub = document.getElementById("pub").value;
+      const sub = document.getElementById("sub").value;
+      const cls = document.getElementById("cls").value;
+      const chap = document.getElementById("chap").value;
+      const types = (pub && sub && cls && chap) ? Object.keys(data[pub][sub][cls][chap]) : [];
+      fillSelect("qtype", types); reset(["old_q"]);
+    }
+
+    function loadQuestions(){
+      const pub = document.getElementById("pub").value;
+      const sub = document.getElementById("sub").value;
+      const cls = document.getElementById("cls").value;
+      const chap = document.getElementById("chap").value;
+      const type = document.getElementById("qtype").value;
+      let list = [];
+
+      if(type && data[pub][sub][cls][chap][type]){
+        const qlist = data[pub][sub][cls][chap][type];
+
+        if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(type)){
+          list = qlist.map((q, i) => ({ idx: i, display: q }));
+          showForm("f_simple");
+
+        } else if(type==="Match the Following"){
+          list = qlist.map((pair, i) => {
+            const k = Object.keys(pair)[0];
+            return { idx: i, display: k + " : " + pair[k] };
+          });
+          showForm("f_match");
+
+        } else if(type==="Choose the Best Answer"){
+          list = qlist.map((mcq, i) => ({ idx: i, display: mcq.question }));
+          showForm("f_mcq");
+
+        } else if(type==="Full Form"){
+          list = qlist.map((ff, i) => {
+            const k = Object.keys(ff)[0];
+            return { idx: i, display: k + " : " + ff[k] };
+          });
+          showForm("f_full");
+        }
+      }
+
+      fillSelect("old_q", list);
+    }
+
+    function fillSelect(id, arr){
+      let opt = '<option value="" disabled selected>--Select--</option>';
+      arr.forEach((v,i)=>{
+        if (typeof v === "object") {
+          opt += `<option value="${v.idx}">${v.display}</option>`;
+        } else {
+          opt += `<option value="${v}">${v}</option>`;
+        }
+      });
+      document.getElementById(id).innerHTML = opt;
+    }
+
+    function reset(ids){
+      ids.forEach(id=>document.getElementById(id).innerHTML='<option value="" disabled selected>--Select--</option>');
+    }
+
+    function showForm(id){
+      ["f_simple","f_match","f_mcq","f_full"].forEach(f=>document.getElementById(f).classList.add("hidden"));
+      document.getElementById(id).classList.remove("hidden");
+    }
+
+    // Init publications
+    fillSelect("pub", Object.keys(data));
+  </script>
+</body>
+</html>
+

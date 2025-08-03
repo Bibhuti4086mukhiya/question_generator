@@ -1,7 +1,9 @@
 import os
 import json
 import random
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import Flask, flash, jsonify, render_template, request, redirect, url_for
+
+import database
 
 app = Flask(__name__)
 DATA_FILE = 'data.json'
@@ -268,8 +270,113 @@ def add_info():
 
     return render_template('add_info.html')
 
+def rename_key_in_json(filename, publication, subject=None, class_name=None, chapter=None,
+                       new_publication=None, new_subject=None, new_class=None, new_chapter=None):
+    with open(filename, "r") as f:
+        data = json.load(f)
+
+    if new_publication and publication in data:
+        data[new_publication] = data.pop(publication)
+        publication = new_publication  # update reference
+
+    if subject and new_subject and subject in data[publication]:
+        data[publication][new_subject] = data[publication].pop(subject)
+        subject = new_subject
+
+    if class_name and new_class and class_name in data[publication][subject]:
+        data[publication][subject][new_class] = data[publication][subject].pop(class_name)
+        class_name = new_class
+
+    if chapter and new_chapter and chapter in data[publication][subject][class_name]:
+        data[publication][subject][class_name][new_chapter] = \
+            data[publication][subject][class_name].pop(chapter)
+
+    with open(filename, "w") as f:
+        json.dump(data, f, indent=4)
 
 
+@app.route('/rename', methods=['GET', 'POST'])
+def rename_page():
+    data = load_data()
+    publications = list(data.keys())
+
+    if request.method == 'POST':
+        old_pub = request.form.get('old_publication')
+        new_pub = request.form.get('new_publication', '').strip()
+        old_sub = request.form.get('old_subject') or None
+        new_sub = request.form.get('new_subject', '').strip()
+        old_class = request.form.get('old_class_name') or None
+        new_class = request.form.get('new_class_name', '').strip()
+        old_chap = request.form.get('old_chapter') or None
+        new_chap = request.form.get('new_chapter', '').strip()
+
+        # ✅ Only rename fields where new value is provided
+        rename_key_in_json(
+            'data.json',
+            publication=old_pub,
+            subject=old_sub,
+            class_name=old_class,
+            chapter=old_chap,
+            new_publication=new_pub if new_pub else None,
+            new_subject=new_sub if new_sub else None,
+            new_class=new_class if new_class else None,
+            new_chapter=new_chap if new_chap else None
+        )
+
+        return redirect(url_for('rename_page'))
+
+    return render_template('rename.html', publications=publications, data=data)
+
+@app.route("/rename_question", methods=["GET", "POST"])
+def rename_question():
+    data = load_data()
+
+    if request.method == "POST":
+        pub = request.form["publication"]
+        sub = request.form["subject"]
+        cls = request.form["class_name"]
+        chap = request.form["chapter"]
+        qtype = request.form["qtype"]
+        idx = int(request.form["old_question"])   # index from dropdown
+        qlist = data[pub][sub][cls][chap][qtype]
+
+        # Handle each type
+        if qtype in ["Fill in the Blanks", "True/False", "Answer the Following", "Manual Questions"]:
+            new_q = request.form["new_question"].strip()
+            if new_q:
+                qlist[idx] = new_q
+
+        elif qtype == "Match the Following":
+            new_left = request.form["new_left"].strip()
+            new_right = request.form["new_right"].strip()
+            if new_left and new_right:
+                qlist[idx] = {new_left: new_right}
+
+        elif qtype == "Choose the Best Answer":
+            new_q = request.form["new_question_mcq"].strip()
+            new_opts = [
+                request.form["option1"].strip(),
+                request.form["option2"].strip(),
+                request.form["option3"].strip(),
+                request.form["option4"].strip(),
+            ]
+            new_ans = request.form["answer"].strip()
+            qlist[idx] = {
+                "question": new_q,
+                "options": new_opts,
+                "answer": new_ans,
+            }
+
+        elif qtype == "Full Form":
+            new_abbr = request.form["new_abbr"].strip()
+            new_full = request.form["new_full"].strip()
+            if new_abbr and new_full:
+                qlist[idx] = {new_abbr: new_full}
+
+        save_data(data)
+        return "✅ Rename successful! <a href='/rename_question'>Rename more</a>"
+
+    return render_template("rename_question.html", data=data)
 
 # Run app
 if __name__ == '__main__':
