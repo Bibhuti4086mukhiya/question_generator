@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Data</title>
+</head>
+<body>
+    <h2>Delete Publication / Subject / Class / Chapter</h2>
+
+    <form method="POST">
+        <!-- Publication -->
+        <label>Publication:</label>
+        <select name="publication" id="publication" onchange="loadSubjects()" required>
+            <option value="" disabled selected>--Select Publication--</option>
+            {% for pub in publications %}
+            <option value="{{ pub }}">{{ pub }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Subject -->
+        <label>Subject:</label>
+        <select name="subject" id="subject" onchange="loadClasses()">
+            <option value="" selected>--Select Subject (optional)--</option>
+        </select><br><br>
+
+        <!-- Class -->
+        <label>Class:</label>
+        <select name="class_name" id="class_name" onchange="loadChapters()">
+            <option value="" selected>--Select Class (optional)--</option>
+        </select><br><br>
+
+        <!-- Chapter -->
+        <label>Chapter:</label>
+        <select name="chapter" id="chapter">
+            <option value="" selected>--Select Chapter (optional)--</option>
+        </select><br><br>
+
+        <button type="submit" style="background:#d9534f;color:white;padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">
+            🗑️ Delete
+        </button>
+    </form>
+
+    <script>
+        const jsonData = {{ data | tojson }};
+
+        function loadSubjects() {
+            const pub = document.getElementById('publication').value;
+            const subjects = pub ? Object.keys(jsonData[pub]) : [];
+            let options = '<option value="">--Select Subject (optional)--</option>';
+            subjects.forEach(s => options += `<option value="${s}">${s}</option>`);
+            document.getElementById('subject').innerHTML = options;
+            document.getElementById('class_name').innerHTML = '<option value="">--Select Class (optional)--</option>';
+            document.getElementById('chapter').innerHTML = '<option value="">--Select Chapter (optional)--</option>';
+        }
+
+        function loadClasses() {
+            const pub = document.getElementById('publication').value;
+            const sub = document.getElementById('subject').value;
+            const classes = (pub && sub) ? Object.keys(jsonData[pub][sub]) : [];
+            let options = '<option value="">--Select Class (optional)--</option>';
+            classes.forEach(c => options += `<option value="${c}">${c}</option>`);
+            document.getElementById('class_name').innerHTML = options;
+            document.getElementById('chapter').innerHTML = '<option value="">--Select Chapter (optional)--</option>';
+        }
+
+        function loadChapters() {
+            const pub = document.getElementById('publication').value;
+            const sub = document.getElementById('subject').value;
+            const cls = document.getElementById('class_name').value;
+            const chapters = (pub && sub && cls) ? Object.keys(jsonData[pub][sub][cls]) : [];
+            let options = '<option value="">--Select Chapter (optional)--</option>';
+            chapters.forEach(ch => options += `<option value="${ch}">${ch}</option>`);
+            document.getElementById('chapter').innerHTML = options;
+        }
+    </script>
+</body>
+</html>
+

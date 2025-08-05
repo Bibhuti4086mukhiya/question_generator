@@ -27,6 +27,24 @@
             <button type="button"> update Question</button>
         </a>
 
+        <a href="{{ url_for('delete_question') }}">
+            <button type="button">
+                Delete Question
+            </button>
+        </a>
+
+
+        <a href="{{ url_for('delete_page') }}">
+            <button type="button">
+                Delete detail
+            </button>
+        </a>
+
+        <a href="{{ url_for('view_questions') }}">
+            <button type="button">
+                view questions
+            </button>
+        </a>
     </div>
 
     <br><br>
@@ -85,12 +103,17 @@
         {% endfor %}
 
         <!-- Manual Questions Section -->
-        <label>Manual Questions:</label><br>
-        <textarea name="manual_questions" rows="6" cols="40"
-            placeholder="Write questions one per line..."></textarea><br><br>
+        <div style="display:flex; align-items:center; gap:15px; margin-top:10px;">
 
-        <label>Marks per Manual Question:</label><br>
-        <input type="number" name="manual_mark" value="2" min="0" class="mark" data-type="manual"><br><br>
+            <label style="white-space:nowrap;">Manual Questions:</label>
+            <textarea name="manual_questions" rows="3" cols="40"
+                placeholder="Write questions one per line..."></textarea>
+
+            <label style="white-space:nowrap;">Marks per Manual Question:</label>
+            <input type="number" name="manual_mark" value="2" min="0" class="mark" data-type="manual"
+                style="width:60px;">
+        </div>
+
 
         <strong>Total Marks:</strong> <span id="total-marks">0</span> Marks<br><br>
 

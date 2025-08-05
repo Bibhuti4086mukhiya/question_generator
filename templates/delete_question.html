@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Delete Question</title>
+</head>
+<body>
+    <h2>Delete Question</h2>
+
+    <form method="POST">
+
+        <!-- Publication -->
+        <label>Publication:</label>
+        <select name="publication" id="publication" onchange="loadSubjects()" required>
+            <option value="" disabled selected>--Select Publication--</option>
+            {% for pub in publications %}
+                <option value="{{ pub }}">{{ pub }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Subject -->
+        <label>Subject:</label>
+        <select name="subject" id="subject" onchange="loadClasses()" required>
+            <option value="" disabled selected>--Select Subject--</option>
+        </select><br><br>
+
+        <!-- Class -->
+        <label>Class:</label>
+        <select name="class_name" id="class" onchange="loadChapters()" required>
+            <option value="" disabled selected>--Select Class--</option>
+        </select><br><br>
+
+        <!-- Chapter -->
+        <label>Chapter:</label>
+        <select name="chapter" id="chapter" onchange="loadQtypes()" required>
+            <option value="" disabled selected>--Select Chapter--</option>
+        </select><br><br>
+
+        <!-- Question Type -->
+        <label>Question Type:</label>
+        <select name="qtype" id="qtype" onchange="loadQuestions()" required>
+            <option value="" disabled selected>--Select Question Type--</option>
+        </select><br><br>
+
+        <!-- Question -->
+        <label>Question:</label>
+        <select name="old_question" id="old_question" required>
+            <option value="" disabled selected>--Select Question--</option>
+        </select><br><br>
+
+        <button type="submit" style="background:#e74c3c;color:white;
+                padding:10px 20px;border:none;border-radius:5px;cursor:pointer;">
+            🗑 Delete Question
+        </button>
+    </form>
+
+    <script>
+        const jsonData = {{ data | tojson }};
+
+        function loadSubjects(){
+            let pub = document.getElementById("publication").value;
+            let subjects = pub ? Object.keys(jsonData[pub]) : [];
+            let html = '<option value="" disabled selected>--Select Subject--</option>';
+            subjects.forEach(s => html += `<option value="${s}">${s}</option>`);
+            document.getElementById("subject").innerHTML = html;
+        }
+
+        function loadClasses(){
+            let pub = document.getElementById("publication").value;
+            let sub = document.getElementById("subject").value;
+            let classes = (pub && sub) ? Object.keys(jsonData[pub][sub]) : [];
+            let html = '<option value="" disabled selected>--Select Class--</option>';
+            classes.forEach(c => html += `<option value="${c}">${c}</option>`);
+            document.getElementById("class").innerHTML = html;
+        }
+
+        function loadChapters(){
+            let pub = document.getElementById("publication").value;
+            let sub = document.getElementById("subject").value;
+            let cls = document.getElementById("class").value;
+            let chapters = (pub && sub && cls) ? Object.keys(jsonData[pub][sub][cls]) : [];
+            let html = '<option value="" disabled selected>--Select Chapter--</option>';
+            chapters.forEach(ch => html += `<option value="${ch}">${ch}</option>`);
+            document.getElementById("chapter").innerHTML = html;
+        }
+
+        function loadQtypes(){
+            let pub = document.getElementById("publication").value;
+            let sub = document.getElementById("subject").value;
+            let cls = document.getElementById("class").value;
+            let ch = document.getElementById("chapter").value;
+            let qtypes = (pub && sub && cls && ch) ? Object.keys(jsonData[pub][sub][cls][ch]) : [];
+            let html = '<option value="" disabled selected>--Select Question Type--</option>';
+            qtypes.forEach(qt => html += `<option value="${qt}">${qt}</option>`);
+            document.getElementById("qtype").innerHTML = html;
+        }
+
+        function loadQuestions(){
+            let pub = document.getElementById("publication").value;
+            let sub = document.getElementById("subject").value;
+            let cls = document.getElementById("class").value;
+            let ch = document.getElementById("chapter").value;
+            let qt = document.getElementById("qtype").value;
+            let questions = (pub && sub && cls && ch && qt) ? jsonData[pub][sub][cls][ch][qt] : [];
+            let html = '<option value="" disabled selected>--Select Question--</option>';
+
+            if(qt === "Match the Following"){
+                questions.forEach(pair => {
+                    let left = Object.keys(pair)[0];
+                    let right = pair[left];
+                    html += `<option value="${left}">${left} = ${right}</option>`;
+                });
+            }
+            else if(qt === "Choose the Best Answer"){
+                questions.forEach(mcq => {
+                    html += `<option value="${mcq.question}">${mcq.question}</option>`;
+                });
+            }
+            else {
+                questions.forEach(q => html += `<option value="${q}">${q}</option>`);
+            }
+            document.getElementById("old_question").innerHTML = html;
+        }
+    </script>
+</body>
+</html>

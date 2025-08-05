@@ -254,7 +254,8 @@
                         "__________ is the part of the computer that carries out instructions.",
                         "The device used to type text into a computer is called a __________.",
                         "The screen where results are displayed is called a __________."
-                    ]
+                    ],
+                    "short answer": []
                 }
             }
         }

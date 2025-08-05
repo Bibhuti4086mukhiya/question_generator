@@ -378,6 +378,142 @@ def rename_question():
 
     return render_template("rename_question.html", data=data)
 
+
+@app.route('/delete_question', methods=['GET', 'POST'])
+def delete_question():
+    data = load_data()  # Load JSON
+
+    if request.method == 'POST':
+        publication = request.form['publication']
+        subject = request.form['subject']
+        class_name = request.form['class_name']
+        chapter = request.form['chapter']
+        qtype = request.form['qtype']
+        old_question = request.form['old_question']
+
+        try:
+            if qtype in ["Fill in the Blanks", "True/False", "Answer the Following", "Manual Questions", "Full Form"]:
+                if old_question in data[publication][subject][class_name][chapter][qtype]:
+                    data[publication][subject][class_name][chapter][qtype].remove(old_question)
+
+            elif qtype == "Match the Following":
+                match_list = data[publication][subject][class_name][chapter][qtype]
+                for pair in match_list:
+                    if old_question in pair.keys():
+                        match_list.remove(pair)
+                        break
+
+            elif qtype == "Choose the Best Answer":
+                mcq_list = data[publication][subject][class_name][chapter][qtype]
+                for mcq in mcq_list:
+                    if mcq["question"] == old_question:
+                        mcq_list.remove(mcq)
+                        break
+
+            save_data(data)
+            return redirect(url_for('delete_question'))
+
+        except Exception as e:
+            return f"❌ Error: {e}"
+
+    # ⬇️ This part runs only when method == GET
+    publications = list(data.keys())
+    return render_template("delete_question.html",data=data,publications=publications)
+
+@app.route('/delete', methods=['GET', 'POST'])
+def delete_page():
+    data = load_data()
+
+    if request.method == 'POST':
+        publication = request.form.get('publication')
+        subject = request.form.get('subject')
+        class_name = request.form.get('class_name')
+        chapter = request.form.get('chapter')
+
+        try:
+            if publication and not subject:  
+                # Delete entire publication
+                if publication in data:
+                    del data[publication]
+
+            elif publication and subject and not class_name:  
+                # Delete subject
+                if subject in data[publication]:
+                    del data[publication][subject]
+
+            elif publication and subject and class_name and not chapter:  
+                # Delete class
+                if class_name in data[publication][subject]:
+                    del data[publication][subject][class_name]
+
+            elif publication and subject and class_name and chapter:  
+                # Delete chapter
+                if chapter in data[publication][subject][class_name]:
+                    del data[publication][subject][class_name][chapter]
+
+            save_data(data)
+            return redirect(url_for('delete_page'))
+
+        except Exception as e:
+            return f"❌ Error: {e}"
+
+    publications = list(data.keys())
+    return render_template("delete.html", data=data, publications=publications)
+
+@app.route("/view_questions", methods=["GET", "POST"])
+def view_questions():
+    data = load_data()
+    publications = list(data.keys())
+    questions_data = None
+    selected_pub = selected_sub = selected_class = selected_chapter = None
+
+    if request.method == "POST":
+        selected_pub = request.form.get("publication")
+        selected_sub = request.form.get("subject")
+        selected_class = request.form.get("class_name")
+        selected_chapter = request.form.get("chapter")
+
+        if not (selected_pub and selected_sub and selected_class):
+            return "❌ Please select Publication, Subject, and Class"
+
+        if selected_chapter:  # one chapter only
+            questions_data = {selected_chapter: data[selected_pub][selected_sub][selected_class][selected_chapter]}
+        else:  # all chapters of the class
+            questions_data = data[selected_pub][selected_sub][selected_class]
+
+    return render_template(
+        "view_questions.html",
+        data=data,
+        publications=publications,
+        questions_data=questions_data,
+        selected_pub=selected_pub,
+        selected_sub=selected_sub,
+        selected_class=selected_class,
+        selected_chapter=selected_chapter,
+    )
+
+@app.route("/add_category", methods=["GET", "POST"])
+def add_category():
+    data = load_data()
+    publications = list(data.keys())
+
+    if request.method == "POST":
+        pub = request.form["publication"]
+        sub = request.form["subject"]
+        cls = request.form["class_name"]
+        chapter = request.form["chapter"]
+        new_category = request.form["new_category"]
+
+        if pub and sub and cls and chapter and new_category:
+            if new_category not in data[pub][sub][cls][chapter]:
+                data[pub][sub][cls][chapter][new_category] = []
+                save_data(data)
+                return "✅ Category Added Successfully!"
+            else:
+                return "⚠️ Category already exists!"
+
+    return render_template("add_category.html", publications=publications, data=data)
+
 # Run app
 if __name__ == '__main__':
     app.run(debug=True)

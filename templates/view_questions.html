@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>View Questions</title>
+    <script>
+        const jsonData = {{ data | tojson }};
+
+        function loadSubjects() {
+            const pub = document.getElementById("publication").value;
+            const subjectSelect = document.getElementById("subject");
+            subjectSelect.innerHTML = "<option value=''>--Select Subject--</option>";
+
+            if (pub && jsonData[pub]) {
+                Object.keys(jsonData[pub]).forEach(sub => {
+                    subjectSelect.innerHTML += `<option value="${sub}">${sub}</option>`;
+                });
+            }
+            document.getElementById("class_name").innerHTML = "<option value=''>--Select Class--</option>";
+            document.getElementById("chapter").innerHTML = "<option value=''>--Select Chapter--</option>";
+        }
+
+        function loadClasses() {
+            const pub = document.getElementById("publication").value;
+            const sub = document.getElementById("subject").value;
+            const classSelect = document.getElementById("class_name");
+            classSelect.innerHTML = "<option value=''>--Select Class--</option>";
+
+            if (pub && sub && jsonData[pub][sub]) {
+                Object.keys(jsonData[pub][sub]).forEach(cls => {
+                    classSelect.innerHTML += `<option value="${cls}">${cls}</option>`;
+                });
+            }
+            document.getElementById("chapter").innerHTML = "<option value=''>--Select Chapter--</option>";
+        }
+
+        function loadChapters() {
+            const pub = document.getElementById("publication").value;
+            const sub = document.getElementById("subject").value;
+            const cls = document.getElementById("class_name").value;
+            const chapterSelect = document.getElementById("chapter");
+            chapterSelect.innerHTML = "<option value=''>--All Chapters--</option>";
+
+            if (pub && sub && cls && jsonData[pub][sub][cls]) {
+                Object.keys(jsonData[pub][sub][cls]).forEach(ch => {
+                    chapterSelect.innerHTML += `<option value="${ch}">${ch}</option>`;
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>📚 View Questions</h2>
+
+    <form method="POST">
+        <!-- Publication -->
+        <label>Publication (required):</label>
+        <select name="publication" id="publication" onchange="loadSubjects()" required>
+            <option value="">--Select Publication--</option>
+            {% for pub in publications %}
+            <option value="{{ pub }}" {% if selected_pub == pub %}selected{% endif %}>{{ pub }}</option>
+            {% endfor %}
+        </select><br><br>
+
+        <!-- Subject -->
+        <label>Subject (required):</label>
+        <select name="subject" id="subject" onchange="loadClasses()" required>
+            <option value="">--Select Subject--</option>
+        </select><br><br>
+
+        <!-- Class -->
+        <label>Class (required):</label>
+        <select name="class_name" id="class_name" onchange="loadChapters()" required>
+            <option value="">--Select Class--</option>
+        </select><br><br>
+
+        <!-- Chapter -->
+        <label>Chapter (optional):</label>
+        <select name="chapter" id="chapter">
+            <option value="">--All Chapters--</option>
+        </select><br><br>
+
+        <button type="submit">👁 View Questions</button>
+    </form>
+
+    {% if questions_data %}
+        <h3>📖 Questions</h3>
+        {% for chapter, qtypes in questions_data.items() %}
+            <h4>📘 Chapter: {{ chapter }}</h4>
+            {% for qtype, qlist in qtypes.items() %}
+                <strong>{{ qtype }}</strong>
+                <ul>
+                    {% if qtype == "Match the Following" %}
+                        {% for pair in qlist %}
+                            {% for left, right in pair.items() %}
+                                <li>{{ left }} → {{ right }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    {% elif qtype == "Choose the Best Answer" %}
+                        {% for mcq in qlist %}
+                            <li>
+                                {{ mcq.question }}<br>
+                                a) {{ mcq.options[0] }} &nbsp;
+                                b) {{ mcq.options[1] }} &nbsp;
+                                c) {{ mcq.options[2] }} &nbsp;
+                                d) {{ mcq.options[3] }} <br>
+                                <em>Answer: {{ mcq.answer }}</em>
+                            </li>
+                        {% endfor %}
+                    {% elif qtype == "Full Form" %}
+                        {% for abbr in qlist %}
+                            {% if abbr is mapping %}
+                                {% for k, v in abbr.items() %}
+                                    <li>{{ k }} = {{ v }}</li>
+                                {% endfor %}
+                            {% else %}
+                                <li>{{ abbr }}</li>
+                            {% endif %}
+                        {% endfor %}
+                    {% else %}
+                        {% for q in qlist %}
+                            <li>{{ q }}</li>
+                        {% endfor %}
+                    {% endif %}
+                </ul>
+            {% endfor %}
+        {% endfor %}
+    {% endif %}
+</body>
+</html>
