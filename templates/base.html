@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}My App{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- Simple Nav Bar -->
+<div style="display: flex; gap: 15px; margin-bottom: 20px;">
+
+    <a href="{{ url_for('index') }}">
+        <button type="button">Home</button>
+    </a>
+
+    <a href="{{ url_for('add_info') }}">
+        <button type="button">Add Publication</button>
+    </a>
+
+    <a href="{{ url_for('add_question') }}">
+        <button type="button">Add Question</button>
+    </a>
+
+    <a href="{{ url_for('rename_page') }}">
+        <button type="button">Rename Publication</button>
+    </a>
+
+    <a href="{{ url_for('rename_question') }}">
+        <button type="button">Update Question</button>
+    </a>
+
+    <a href="{{ url_for('delete_question') }}">
+        <button type="button">Delete Question</button>
+    </a>
+
+    <a href="{{ url_for('delete_page') }}">
+        <button type="button">Delete Detail</button>
+    </a>
+
+    <a href="{{ url_for('view_questions') }}">
+        <button type="button">View Questions</button>
+    </a>
+
+</div>
+
+<!-- Page Content -->
+{% block content %}{% endblock %}
+
+</body>
+</html>

@@ -1,15 +1,4 @@
 {
-    "Cambridge": {
-        "Science": {
-            "Class 3": {}
-        },
-        "social": {
-            "Class 4": {}
-        },
-        "nepali": {
-            "Class 5": {}
-        }
-    },
     "swastik books pvt. ltd.": {
         "Computer": {
             "class 7": {
@@ -249,21 +238,12 @@
                 },
                 "chapter 1": {
                     "Fill in the Blanks": [
-                        "A __________ is an electronic machine that processes data and gives output.",
                         "The physical parts of a computer are called __________.",
                         "__________ is the part of the computer that carries out instructions.",
                         "The device used to type text into a computer is called a __________.",
                         "The screen where results are displayed is called a __________."
-                    ],
-                    "short answer": []
+                    ]
                 }
-            }
-        }
-    },
-    "ajanta": {
-        "english gammer": {
-            "4": {
-                "3": {}
             }
         }
     },
@@ -309,7 +289,14 @@
             }
         }
     },
-    "Mit": {
+    "unique's computer science": {
+        "Computer": {
+            "class 5": {
+                "chapter 1": {}
+            }
+        }
+    },
+    "systematic": {
         "Science": {
             "Class 3": {
                 "Chapter 1": {
@@ -614,7 +601,8 @@
                         "What do switches do?",
                         "What do wires do?",
                         "What does a light bulb produce?"
-                    ]
+                    ],
+                    "one word answer": []
                 }
             }
         },
@@ -818,7 +806,7 @@
                         }
                     ],
                     "Answer the Following": [
-                        "What is a computer?",
+                        "i am working",
                         "What does a keyboard do?",
                         "How do you use a mouse?",
                         "What does the monitor show?",
@@ -843,6 +831,26 @@
                     ]
                 }
             }
+        }
+    },
+    "saraswati school": {
+        "Science": {
+            "Class 3": {
+                "chapter 1": {
+                    "Short Answer": [
+                        "how are you ?",
+                        "i am fine."
+                    ],
+                    "technical term": []
+                },
+                "chapter 2": {}
+            }
+        },
+        "social": {
+            "Class 4": {}
+        },
+        "nepali": {
+            "Class 5": {}
         }
     }
 }

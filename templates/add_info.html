@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Add Info</title>
-</head>
+{% block title %}Add Question{% endblock %}
 
-<body>
+{% block content %}
+
+
     <h2>Add Publication, Subject, Class, and Chapter</h2>
 
     <form method="POST" action="/add_info">
@@ -27,6 +26,4 @@
         </a>
         <br><br>
     </form>
-</body>
-
-</html>
+{% endblock %}

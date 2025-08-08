@@ -4,3 +4,11 @@
 <img width="532" height="422" alt="image" src="https://github.com/user-attachments/assets/7a7665e8-9c71-4e6d-94c8-31ecad97b20f" />
 <img width="504" height="536" alt="image" src="https://github.com/user-attachments/assets/12582f1f-b1aa-4fc1-a5e0-d222815c59a7" />
 
+
+add chapter problem done
+have add on add question dropdown 
+
+add question and add cateory is connected
+
+if i added new cateory then shoul be show in question types
+

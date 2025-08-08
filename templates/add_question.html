@@ -1,12 +1,10 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Add Question</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-</head>
+{% block title %}Add Question{% endblock %}
 
-<body>
+{% block content %}
+
+
     <h2>Add a Question</h2>
 
     <a href="/add_info">
@@ -43,7 +41,7 @@
         </select><br><br>
 
         <!-- Question Type -->
-        <label>Question Type:</label>
+        <label>Question Category:</label>
         <select name="qtype" required onchange="toggleFields(this.value)">
             <option value="Fill in the Blanks">Fill in the Blanks</option>
             <option value="True/False">True/False</option>
@@ -51,7 +49,12 @@
             <option value="Choose the Best Answer">Choose the Best Answer</option>
             <option value="Answer the Following">Answer the Following</option>
             <option value="Full Form">Full Form</option>
+            <option value="One Word Answer">One Word Answer</option>
+            <option value="Short Answer">Short Answer</option>
+            <option value="Long Answer">Long Answer</option>
         </select><br><br>
+
+
 
         <!-- Normal Question -->
         <div id="normal_question_div">
@@ -155,6 +158,4 @@
             });
         });
     </script>
-</body>
-
-</html>
+{% endblock %}

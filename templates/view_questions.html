@@ -1,6 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+
     <title>View Questions</title>
     <script>
         const jsonData = {{ data | tojson }};
@@ -125,5 +128,5 @@
             {% endfor %}
         {% endfor %}
     {% endif %}
-</body>
-</html>
+    
+{% endblock %}

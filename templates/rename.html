@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "base.html" %}
 
-<head>
-    <title>Rename Keys</title>
-</head>
+{% block title %}Add Question{% endblock %}
 
-<body>
+{% block content %}
+
     <h2>Rename Publication, Subject, Class, or Chapter</h2>
 
     <form method="POST">
@@ -83,6 +81,5 @@
             document.getElementById('old_chapter').innerHTML = options;
         }
     </script>
-</body>
 
-</html>
+{% endblock %}

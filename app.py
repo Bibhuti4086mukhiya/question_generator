@@ -84,10 +84,116 @@ def save_question():
     save_data(data)
     return redirect(url_for('show_form'))
 
-
-
-
 # Generate question paper
+# @app.route('/generate', methods=['POST'])
+# def generate_question_paper():
+#     data = load_data()
+
+#     pub = request.form.get('publication')
+#     sub = request.form.get('subject')
+#     cls = request.form.get('class')
+#     chapters = request.form.getlist('chapters')
+   
+
+#     # Question type counts
+#     question_counts = {
+#         "Fill in the Blanks": int(request.form.get('fill_count', 0)),
+#         "True/False": int(request.form.get('tf_count', 0)),
+#         "Match the Following": int(request.form.get('match_count', 0)),
+#         "Choose the Best Answer": int(request.form.get('best_count', 0)),
+#         "Answer the Following": int(request.form.get('ans_count', 0)),
+#         "Full Form": int(request.form.get('fullform_count', 0)),
+#         "One Word Answer": int(request.form.get('oneword_count', 0)),
+#         "Short Question Answer": int(request.form.get('short_count', 0)),
+#         "Long Question Answer": int(request.form.get('long_count', 0)),
+#     }
+
+
+#     # Marks per question
+#     marks = {
+#         "Fill in the Blanks": int(request.form.get('fill_mark', 0)),
+#         "True/False": int(request.form.get('tf_mark', 0)),
+#         "Match the Following": int(request.form.get('match_mark', 0)),
+#         "Choose the Best Answer": int(request.form.get('best_mark', 0)),
+#         "Answer the Following": int(request.form.get('ans_mark', 0)),
+#         "Full Form": int(request.form.get('fullform_mark', 0)),
+#         "One Word Answer": int(request.form.get('oneword_mark', 0)),
+#         "Short Question Answer": int(request.form.get('short_mark', 0)),
+#         "Long Question Answer": int(request.form.get('long_mark', 0)),
+#     }
+
+#     formatted_questions = {
+#         "Fill in the Blanks": [],
+#         "True/False": [],
+#         "Match the Following": [],
+#         "Choose the Best Answer": [],
+#         "Full Form": [],
+#         "One Word Answer": [],
+#         "Answer the Following": [],
+#         "Short Question Answer": [],
+#         "Long Question Answer": [],
+#         "Manual Questions": []
+#     }
+    
+#     manual_questions = request.form.get('manual_questions', '').split('\n')
+#     manual_questions = [q.strip() for q in manual_questions if q.strip()]
+#     manual_mark = int(request.form.get('manual_mark', 0))
+    
+#     formatted_questions["Manual Questions"] = manual_questions
+#     marks["Manual Questions"] = manual_mark
+#     question_counts["Manual Questions"] = len(manual_questions)
+
+#     # Collect questions
+#     for chapter in chapters:
+#         chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+#         for qtype in formatted_questions:
+#             if qtype == "Match the Following":
+#                 continue
+#             formatted_questions[qtype].extend(chapter_data.get(qtype, []))
+
+#     # Random sampling (non-match types)
+#     for qtype in formatted_questions:
+#         if qtype == "Match the Following":
+#             continue
+#         all_q = formatted_questions[qtype]
+#         formatted_questions[qtype] = random.sample(all_q, min(question_counts[qtype], len(all_q)))
+
+#     # Match the Following logic
+#     match_pairs = []
+#     for chapter in chapters:
+#         items = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {}).get("Match the Following", [])
+#         for pair in items:
+#             for k, v in pair.items():
+#                 match_pairs.append((k.strip(), v.strip()))
+
+#     selected_match = random.sample(match_pairs, min(question_counts["Match the Following"], len(match_pairs)))
+
+#     # Shuffle only the right side (values)
+#     left = [k for k, v in selected_match]
+#     right = [v for k, v in selected_match]
+#     shuffled_right = right[:]
+#     random.shuffle(shuffled_right)
+
+#     formatted_questions["Match the Following"] = list(zip(left, shuffled_right))
+
+
+
+#     total_marks = sum(question_counts[qtype] * marks[qtype] for qtype in question_counts)
+
+#     return render_template(
+#         'question_paper.html',
+#         subject=sub,
+#         questions=formatted_questions,
+#         marks=marks,
+#         total_marks=total_marks,
+#         counts = {
+#             qtype: len(formatted_questions[qtype])
+#             for qtype in formatted_questions
+#         }
+
+#     )
+
+# Generate question paper dynamically
 @app.route('/generate', methods=['POST'])
 def generate_question_paper():
     data = load_data()
@@ -96,82 +202,73 @@ def generate_question_paper():
     sub = request.form.get('subject')
     cls = request.form.get('class')
     chapters = request.form.getlist('chapters')
-   
 
-    # Question type counts
-    question_counts = {
-        "Fill in the Blanks": int(request.form.get('fill_count', 0)),
-        "True/False": int(request.form.get('tf_count', 0)),
-        "Match the Following": int(request.form.get('match_count', 0)),
-        "Choose the Best Answer": int(request.form.get('best_count', 0)),
-        "Answer the Following": int(request.form.get('ans_count', 0)),
-        "Full Form": int(request.form.get('fullform_count', 0)),
-    }
-
-    # Marks per question
-    marks = {
-        "Fill in the Blanks": int(request.form.get('fill_mark', 0)),
-        "True/False": int(request.form.get('tf_mark', 0)),
-        "Match the Following": int(request.form.get('match_mark', 0)),
-        "Choose the Best Answer": int(request.form.get('best_mark', 0)),
-        "Answer the Following": int(request.form.get('ans_mark', 0)),
-        "Full Form": int(request.form.get('fullform_mark', 0)),
-    }
-
-    formatted_questions = {
-        "Fill in the Blanks": [],
-        "True/False": [],
-        "Match the Following": [],
-        "Choose the Best Answer": [],
-        "Answer the Following": [],
-        "Full Form": [],
-        "Manual Questions": []
-    }
-    
-    manual_questions = request.form.get('manual_questions', '').split('\n')
-    manual_questions = [q.strip() for q in manual_questions if q.strip()]
-    manual_mark = int(request.form.get('manual_mark', 0))
-    
-    formatted_questions["Manual Questions"] = manual_questions
-    marks["Manual Questions"] = manual_mark
-    question_counts["Manual Questions"] = len(manual_questions)
-
-    # Collect questions
+    # Step 1: Collect all categories from selected chapters
+    all_categories = set()
     for chapter in chapters:
         chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
-        for qtype in formatted_questions:
-            if qtype == "Match the Following":
+        for qtype in chapter_data.keys():
+            all_categories.add(qtype)
+
+    # Always include Manual Questions
+    all_categories.add("Manual Questions")
+
+    # Step 2: Build question_counts and marks dictionaries dynamically
+    question_counts = {}
+    marks = {}
+    formatted_questions = {}
+
+    for qtype in all_categories:
+        # convert category name to safe form key
+        key = qtype.lower().replace(" ", "_")
+        question_counts[qtype] = int(request.form.get(f"{key}_count", 0))
+        marks[qtype] = int(request.form.get(f"{key}_mark", 0))
+        formatted_questions[qtype] = []
+
+    # Step 3: Handle manual questions separately
+    # Manual Questions
+    manual_questions = request.form.get('manual_questions', '').split('\n')
+    manual_questions = [q.strip() for q in manual_questions if q.strip()]
+
+    manual_mark = int(request.form.get('manual_mark', 0))
+
+    formatted_questions["Manual Questions"] = manual_questions
+    marks["Manual Questions"] = manual_mark
+    question_counts["Manual Questions"] = len(manual_questions)   # ✅ number of lines in textarea
+
+    # Step 4: Collect questions from chapters
+    for chapter in chapters:
+        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+        for qtype in all_categories:
+            if qtype in ["Match the Following"]:
                 continue
             formatted_questions[qtype].extend(chapter_data.get(qtype, []))
 
-    # Random sampling (non-match types)
+    # Step 5: Random sample for normal categories
     for qtype in formatted_questions:
-        if qtype == "Match the Following":
+        if qtype in ["Match the Following"]:
             continue
         all_q = formatted_questions[qtype]
-        formatted_questions[qtype] = random.sample(all_q, min(question_counts[qtype], len(all_q)))
+        count = question_counts.get(qtype, 0)
+        formatted_questions[qtype] = random.sample(all_q, min(count, len(all_q))) if all_q else []
 
-    # Match the Following logic
-    match_pairs = []
-    for chapter in chapters:
-        items = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {}).get("Match the Following", [])
-        for pair in items:
-            for k, v in pair.items():
-                match_pairs.append((k.strip(), v.strip()))
+    # Step 6: Special handling for Match the Following
+    if "Match the Following" in all_categories:
+        match_pairs = []
+        for chapter in chapters:
+            items = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {}).get("Match the Following", [])
+            for pair in items:
+                for k, v in pair.items():
+                    match_pairs.append((k.strip(), v.strip()))
 
-    selected_match = random.sample(match_pairs, min(question_counts["Match the Following"], len(match_pairs)))
+        selected_match = random.sample(match_pairs, min(question_counts["Match the Following"], len(match_pairs))) if match_pairs else []
+        left = [k for k, v in selected_match]
+        right = [v for k, v in selected_match]
+        random.shuffle(right)
+        formatted_questions["Match the Following"] = list(zip(left, right))
 
-    # Shuffle only the right side (values)
-    left = [k for k, v in selected_match]
-    right = [v for k, v in selected_match]
-    shuffled_right = right[:]
-    random.shuffle(shuffled_right)
-
-    formatted_questions["Match the Following"] = list(zip(left, shuffled_right))
-
-
-
-    total_marks = sum(question_counts[qtype] * marks[qtype] for qtype in question_counts)
+    # Step 7: Total marks
+    total_marks = sum(question_counts[qtype] * marks.get(qtype, 0) for qtype in question_counts)
 
     return render_template(
         'question_paper.html',
@@ -179,18 +276,15 @@ def generate_question_paper():
         questions=formatted_questions,
         marks=marks,
         total_marks=total_marks,
-        counts = {
-            qtype: len(formatted_questions[qtype])
-            for qtype in formatted_questions
-        }
-
+        counts={qtype: len(formatted_questions[qtype]) for qtype in formatted_questions}
     )
-    
+
+
 @app.route('/add_question', methods=['GET', 'POST'])
 def add_question():
     data = load_data()
     publications = list(data.keys())
-
+    
     if request.method == 'POST':
         publication = request.form['publication']
         subject = request.form['subject']
@@ -237,8 +331,8 @@ def add_question():
 
     # Pass publications to template to populate dropdown
     return render_template('add_question.html', publications=publications)
-
-
+                           
+                           
 @app.route('/get_questions/<publication>/<subject>/<class_name>/<chapter>')
 def get_questions(publication, subject, class_name, chapter):
     data = load_data()
@@ -491,6 +585,30 @@ def view_questions():
         selected_class=selected_class,
         selected_chapter=selected_chapter,
     )
+    
+@app.route('/get_question_types', methods=['POST'])
+def get_question_types():
+    data = load_data()
+    req = request.get_json()
+
+    pub = req.get("publication")
+    sub = req.get("subject")
+    cls = req.get("class")
+    chapters = req.get("chapters", [])
+
+    # Collect all unique question types from selected chapters
+    question_types = set()
+    for chapter in chapters:
+        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+        for qtype in chapter_data.keys():
+            question_types.add(qtype)
+
+    # Always add Manual Questions
+    question_types.add("Manual Questions")
+
+    return jsonify({"types": list(question_types)})
+
+
 
 @app.route("/add_category", methods=["GET", "POST"])
 def add_category():
@@ -513,6 +631,26 @@ def add_category():
                 return "⚠️ Category already exists!"
 
     return render_template("add_category.html", publications=publications, data=data)
+
+@app.route("/get_categories/<pub>/<sub>/<cls>", methods=["GET"])
+def get_categories(pub, sub, cls):
+    chapters_param = request.args.get("chapters", "")
+    selected_chapters = chapters_param.split(",") if chapters_param else []
+
+    data = load_data()
+    categories = set()
+
+    try:
+        for chapter in selected_chapters:
+            chapter = chapter.strip()
+            if chapter and chapter in data.get(pub, {}).get(sub, {}).get(cls, {}):
+                cats = list(data[pub][sub][cls][chapter].keys())
+                categories.update(cats)
+    except Exception as e:
+        print("❌ Error fetching categories:", e)
+
+    return {"categories": sorted(list(categories))}
+
 
 # Run app
 if __name__ == '__main__':

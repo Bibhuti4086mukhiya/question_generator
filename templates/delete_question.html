@@ -1,9 +1,9 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Delete Question</title>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+
     <h2>Delete Question</h2>
 
     <form method="POST">
@@ -121,5 +121,4 @@
             document.getElementById("old_question").innerHTML = html;
         }
     </script>
-</body>
-</html>
+{% endblock %}

@@ -1,15 +1,21 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Rename Question</title>
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    select, input, button { margin: 5px 0; padding: 6px; }
-    .hidden { display: none; }
-    .box { margin-top: 10px; padding: 10px; border: 1px solid #ccc; border-radius: 5px; }
-  </style>
-</head>
-<body>
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+
+
+<style>
+  .hidden { display: none; }
+
+  /* Add space between dropdowns */
+  select {
+    margin-bottom: 10px;
+  }
+</style>
+
+
+
   <h2>Rename Question</h2>
 
   <form method="POST">
@@ -154,6 +160,7 @@
       document.getElementById(id).innerHTML = opt;
     }
 
+
     function reset(ids){
       ids.forEach(id=>document.getElementById(id).innerHTML='<option value="" disabled selected>--Select--</option>');
     }
@@ -166,6 +173,5 @@
     // Init publications
     fillSelect("pub", Object.keys(data));
   </script>
-</body>
-</html>
+{% endblock %}
 
