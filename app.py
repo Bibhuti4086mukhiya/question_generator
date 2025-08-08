@@ -468,7 +468,7 @@ def rename_question():
                 qlist[idx] = {new_abbr: new_full}
 
         save_data(data)
-        return "✅ Rename successful! <a href='/rename_question'>Rename more</a>"
+        return redirect(url_for('rename_question'))
 
     return render_template("rename_question.html", data=data)
 
@@ -650,6 +650,34 @@ def get_categories(pub, sub, cls):
         print("❌ Error fetching categories:", e)
 
     return {"categories": sorted(list(categories))}
+
+@app.route('/delete_question_type', methods=['GET', 'POST'])
+def delete_question_type():
+    data = load_data()
+    message = None
+
+    if request.method == 'POST':
+        pub = request.form['publication']
+        sub = request.form['subject']
+        cls = request.form['class_name']
+        chap = request.form['chapter']
+        qtype = request.form['qtype']
+
+        try:
+            # Delete the question type from that chapter
+            del data[pub][sub][cls][chap][qtype]
+            
+            # If chapter is empty after deletion, you can optionally delete chapter
+            if not data[pub][sub][cls][chap]:
+                del data[pub][sub][cls][chap]
+
+            save_data(data)
+            message = f"Deleted all '{qtype}' questions from chapter '{chap}'."
+
+        except KeyError:
+            message = "Selected questions not found."
+
+    return render_template('delete_question_type.html', data=data, message=message)
 
 
 # Run app

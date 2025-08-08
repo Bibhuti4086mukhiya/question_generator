@@ -36,73 +36,6 @@
                         "what is research",
                         "what is wow"
                     ],
-                    "Full Form": [
-                        "URL",
-                        "HTTP",
-                        "HTML",
-                        "IP",
-                        "WWW",
-                        "URL",
-                        "HTTP",
-                        "HTML",
-                        "IP",
-                        "WWW",
-                        "USB",
-                        "ISP",
-                        "LAN",
-                        "WAN",
-                        "Wi-Fi",
-                        "PDF",
-                        "CPU",
-                        "ROM",
-                        "RAM",
-                        "VPN",
-                        "GPS",
-                        "SMS",
-                        "CD",
-                        "DVD",
-                        "OS",
-                        "VIP",
-                        "jcb"
-                    ],
-                    "Match the Following": [
-                        {
-                            "ram": "tempory memory"
-                        },
-                        {
-                            "CPU": "central processing unit"
-                        },
-                        {
-                            "MONITOR": "monitor"
-                        },
-                        {
-                            "KEYBOARD": "keyboard"
-                        },
-                        {
-                            "factory": "robots"
-                        },
-                        {
-                            "BCR": "bar code reader"
-                        },
-                        {
-                            "B": "bar"
-                        },
-                        {
-                            "ghyjty": "tdyjhtyd"
-                        },
-                        {
-                            "BIBHUTI": "bibhuti"
-                        },
-                        {
-                            "BHUSHAN": "bhushan"
-                        },
-                        {
-                            "a": "AA"
-                        },
-                        {
-                            "BALL": "ball"
-                        }
-                    ],
                     "Choose the Best Answer": [
                         {
                             "question": "pppppppppppppp",
@@ -244,55 +177,6 @@
                         "The screen where results are displayed is called a __________."
                     ]
                 }
-            }
-        }
-    },
-    "public": {
-        "science": {
-            "9": {
-                "chapter 2": {
-                    "Fill in the Blanks": [
-                        "The capital city of Nepal is __________.",
-                        "A triangle with all sides equal is called an __________ triangle.",
-                        "The shortcut key for Copy on a computer is Ctrl + __________.",
-                        "Water boils at __________ degrees Celsius.",
-                        "The process by which plants make food using sunlight is called __________."
-                    ],
-                    "True/False": [
-                        "The sun rises in the west. \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 False",
-                        "A byte is equal to 8 bits. \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 True",
-                        "Mount Everest is the tallest mountain in the world. \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 True",
-                        "Plants take in oxygen and release carbon dioxide during photosynthesis. \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 False",
-                        "HTML is a programming language. \u00c3\u00a2\u00e2\u20ac\u00a0\u00e2\u20ac\u2122 False (It\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2s a markup language)"
-                    ],
-                    "Match the Following": [
-                        {
-                            "CPU": "Brain of computer"
-                        }
-                    ],
-                    "Choose the Best Answer": [
-                        {
-                            "question": "Which of the following is an input device?",
-                            "options": [
-                                "Monitor",
-                                "Printer",
-                                "Keyboard",
-                                "Speaker"
-                            ],
-                            "answer": "keyboard"
-                        }
-                    ]
-                },
-                "introduction to enviroment": {
-                    "Fill in the Blanks": []
-                }
-            }
-        }
-    },
-    "unique's computer science": {
-        "Computer": {
-            "class 5": {
-                "chapter 1": {}
             }
         }
     },
@@ -601,8 +485,7 @@
                         "What do switches do?",
                         "What do wires do?",
                         "What does a light bulb produce?"
-                    ],
-                    "one word answer": []
+                    ]
                 }
             }
         },
@@ -775,7 +658,6 @@
                 },
                 "Chapter 1": {
                     "Fill in the Blanks": [
-                        "A computer processes ___.",
                         "The keyboard is used to ___ data.",
                         "A mouse helps to ___ on the screen.",
                         "The monitor shows ___.",
@@ -806,7 +688,6 @@
                         }
                     ],
                     "Answer the Following": [
-                        "i am working",
                         "What does a keyboard do?",
                         "How do you use a mouse?",
                         "What does the monitor show?",
@@ -833,24 +714,5 @@
             }
         }
     },
-    "saraswati school": {
-        "Science": {
-            "Class 3": {
-                "chapter 1": {
-                    "Short Answer": [
-                        "how are you ?",
-                        "i am fine."
-                    ],
-                    "technical term": []
-                },
-                "chapter 2": {}
-            }
-        },
-        "social": {
-            "Class 4": {}
-        },
-        "nepali": {
-            "Class 5": {}
-        }
-    }
+    "saraswati school": {}
 }

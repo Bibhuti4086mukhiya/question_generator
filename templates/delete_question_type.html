@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Delete Questions{% endblock %}
+
+{% block content %}
+
+<style>
+
+  /* Add space between dropdowns */
+  select {
+    margin-bottom: 10px;
+  }
+</style>
+<h2>Delete Questions from Chapter</h2>
+
+<form method="POST">
+  <label>Publication:</label>
+  <select name="publication" id="pub" onchange="loadSubjects()" required>
+    <option value="" disabled selected>--Select--</option>
+  </select><br>
+
+  <label>Subject:</label>
+  <select name="subject" id="sub" onchange="loadClasses()" required>
+    <option value="" disabled selected>--Select--</option>
+  </select><br>
+
+  <label>Class:</label>
+  <select name="class_name" id="cls" onchange="loadChapters()" required>
+    <option value="" disabled selected>--Select--</option>
+  </select><br>
+
+  <label>Chapter:</label>
+  <select name="chapter" id="chap" onchange="loadQtypes()" required>
+    <option value="" disabled selected>--Select--</option>
+  </select><br>
+
+  <label>Question Type:</label>
+  <select name="qtype" id="qtype" required>
+    <option value="" disabled selected>--Select--</option>
+  </select><br>
+
+  <br>
+  <button type="submit" onclick="return confirm('Are you sure you want to delete all questions of this type from this chapter?')">Delete Questions</button>
+</form>
+
+<script>
+  const data = {{ data | tojson }};
+
+  function loadSubjects(){
+    const pub = document.getElementById("pub").value;
+    const subs = pub ? Object.keys(data[pub]) : [];
+    fillSelect("sub", subs);
+    reset(["cls","chap","qtype"]);
+  }
+
+  function loadClasses(){
+    const pub = document.getElementById("pub").value;
+    const sub = document.getElementById("sub").value;
+    const cls = (pub && sub) ? Object.keys(data[pub][sub]) : [];
+    fillSelect("cls", cls);
+    reset(["chap","qtype"]);
+  }
+
+  function loadChapters(){
+    const pub = document.getElementById("pub").value;
+    const sub = document.getElementById("sub").value;
+    const cls = document.getElementById("cls").value;
+    const chaps = (pub && sub && cls) ? Object.keys(data[pub][sub][cls]) : [];
+    fillSelect("chap", chaps);
+    reset(["qtype"]);
+  }
+
+  function loadQtypes(){
+    const pub = document.getElementById("pub").value;
+    const sub = document.getElementById("sub").value;
+    const cls = document.getElementById("cls").value;
+    const chap = document.getElementById("chap").value;
+    const types = (pub && sub && cls && chap) ? Object.keys(data[pub][sub][cls][chap]) : [];
+    fillSelect("qtype", types);
+  }
+
+  function fillSelect(id, arr){
+    let opt = '<option value="" disabled selected>--Select--</option>';
+    arr.forEach(v => { opt += `<option value="${v}">${v}</option>`; });
+    document.getElementById(id).innerHTML = opt;
+  }
+
+  function reset(ids){
+    ids.forEach(id => {
+      document.getElementById(id).innerHTML = '<option value="" disabled selected>--Select--</option>';
+    });
+  }
+
+  // Init publications dropdown
+  fillSelect("pub", Object.keys(data));
+</script>
+
+{% endblock %}

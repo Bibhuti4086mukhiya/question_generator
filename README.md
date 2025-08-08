@@ -12,3 +12,4 @@ add question and add cateory is connected
 
 if i added new cateory then shoul be show in question types
 
+
