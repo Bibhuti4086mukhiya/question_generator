@@ -4,7 +4,6 @@
 
 {% block content %}
 
-
     <h2>Add a Question</h2>
 
     <form method="POST" action="/add_question">
@@ -49,12 +48,18 @@
             <option value="Long Answer">Long Answer</option>
         </select><br><br>
 
-
-
         <!-- Normal Question -->
         <div id="normal_question_div">
             <label>Question(s):</label><br>
             <textarea name="normal_question" rows="3" cols="50"></textarea><br><br>
+        </div>
+
+        <!-- Fill in the Blanks Fields -->
+        <div id="fill_in_blanks_div" style="display:none;">
+            <label>Question (use ___ for blank):</label><br>
+            <textarea name="fib_question" rows="3" cols="50" required></textarea><br><br>
+            <label>Correct Answer:</label><br>
+            <input type="text" name="fib_answer" required><br><br>
         </div>
 
         <!-- Match Fields -->
@@ -79,20 +84,27 @@
         <button type="submit">Add Question</button>
     </form>
 
-
-
-
-
     <!-- JS for Dynamic Dropdowns -->
     <script>
         function toggleFields(value) {
+            document.getElementById("fill_in_blanks_div").style.display = (value === "Fill in the Blanks") ? "block" : "none";
+
             document.getElementById("normal_question_div").style.display =
-                (value === "Choose the Best Answer" || value === "Match the Following") ? "none" : "block";
+                (value === "Choose the Best Answer" || value === "Match the Following" || value === "Fill in the Blanks") ? "none" : "block";
+
             document.getElementById("match_fields_div").style.display =
                 (value === "Match the Following") ? "block" : "none";
+
             document.getElementById("choose_best_answer_div").style.display =
                 (value === "Choose the Best Answer") ? "block" : "none";
         }
+
+        window.onload = function() {
+            const qtypeSelect = document.querySelector('select[name="qtype"]');
+            if (qtypeSelect) {
+                toggleFields(qtypeSelect.value);
+            }
+        };
 
         $(document).ready(function () {
             // Publication -> Subject
@@ -150,4 +162,5 @@
             });
         });
     </script>
+
 {% endblock %}

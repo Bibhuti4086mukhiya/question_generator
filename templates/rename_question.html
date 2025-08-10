@@ -1,175 +1,235 @@
 {% extends "base.html" %}
 
-{% block title %}Add Question{% endblock %}
+{% block title %}Rename Question{% endblock %}
 
 {% block content %}
 
+<h2>Rename Question</h2>
 
-<style>
-  .hidden { display: none; }
+<form method="POST" action="{{ url_for('rename_question') }}">
 
-  /* Add space between dropdowns */
-  select {
-    margin-bottom: 10px;
+  <label>Publication:</label>
+  <select name="publication" id="pub" onchange="loadSubjects()" required></select><br><br>
+
+  <label>Subject:</label>
+  <select name="subject" id="sub" onchange="loadClasses()" required></select><br><br>
+
+  <label>Class:</label>
+  <select name="class_name" id="cls" onchange="loadChapters()" required></select><br><br>
+
+  <label>Chapter:</label>
+  <select name="chapter" id="chap" onchange="loadQtypes()" required></select><br><br>
+
+  <label>Question Type:</label>
+  <select name="qtype" id="qtype" onchange="loadQuestions()" required></select><br><br>
+
+  <label>Old Question:</label>
+  <select name="old_question" id="old_q" onchange="fillOldQuestion()" required></select><br><br>
+
+  <!-- Fields for Fill in the Blanks, True/False, Answer, Manual Questions -->
+  <div id="field_fill_blank" style="display:none; margin-bottom: 15px;">
+    <label>Question (use ___ for blank):</label><br>
+    <textarea name="question_fill_blank" id="question_fill_blank" rows="3" style="width: 100%;" placeholder="Write question with blanks"></textarea><br>
+    <label>Correct Answer:</label><br>
+    <input type="text" name="answer_fill_blank" id="answer_fill_blank" style="width: 100%;" placeholder="Correct answer">
+  </div>
+
+  <!-- Match the Following -->
+  <div id="field_match_following" style="display:none; margin-bottom: 15px;">
+    <label>Left Side:</label><br>
+    <input type="text" name="match_left" id="match_left" style="width: 48%;" placeholder="Enter left side item">
+    <label style="margin-left: 10px;">Right Side:</label><br>
+    <input type="text" name="match_right" id="match_right" style="width: 48%;" placeholder="Enter right side item">
+  </div>
+
+  <!-- Choose the Best Answer -->
+  <div id="field_choose_best_answer" style="display:none; margin-bottom: 15px;">
+    <label>Question:</label><br>
+    <textarea name="question_mcq" id="question_mcq" rows="3" style="width: 100%;" placeholder="Write question here"></textarea><br>
+    <label>Options:</label><br>
+    <input type="text" name="option1" placeholder="Option A" style="width: 23%; margin-right: 2%;">
+    <input type="text" name="option2" placeholder="Option B" style="width: 23%; margin-right: 2%;">
+    <input type="text" name="option3" placeholder="Option C" style="width: 23%; margin-right: 2%;">
+    <input type="text" name="option4" placeholder="Option D" style="width: 23%;"><br><br>
+    <label>Correct Answer:</label><br>
+    <input type="text" name="answer_mcq" id="answer_mcq" style="width: 100%;" placeholder="Correct option">
+  </div>
+
+  <!-- Full Form -->
+  <div id="field_full_form" style="display:none; margin-bottom: 15px;">
+    <label>Abbreviation:</label><br>
+    <input type="text" name="abbr" id="abbr" style="width: 48%;" placeholder="e.g., CPU">
+    <label style="margin-left: 10px;">Full Form:</label><br>
+    <input type="text" name="full_form" id="full_form" style="width: 48%;" placeholder="e.g., Central Processing Unit">
+  </div>
+
+  <button type="submit" style="padding: 8px 16px;">Rename Question</button>
+</form>
+
+<script>
+  const data = {{ data | tojson }};
+
+  function fillSelect(id, items) {
+    let options = '<option value="" disabled selected>--Select--</option>';
+    items.forEach(item => {
+      options += `<option value="${item}">${item}</option>`;
+    });
+    document.getElementById(id).innerHTML = options;
   }
-</style>
 
+  function resetSelects(ids) {
+    ids.forEach(id => {
+      document.getElementById(id).innerHTML = '<option value="" disabled selected>--Select--</option>';
+    });
+  }
 
+  function hideAllFields() {
+    const fields = ['field_fill_blank', 'field_match_following', 'field_choose_best_answer', 'field_full_form'];
+    fields.forEach(id => document.getElementById(id).style.display = 'none');
+  }
 
-  <h2>Rename Question</h2>
+  function showField(id) {
+    hideAllFields();
+    document.getElementById(id).style.display = 'block';
+  }
 
-  <form method="POST">
-    <!-- Publication -->
-    <label>Publication:</label>
-    <select name="publication" id="pub" onchange="loadSubjects()" required></select><br>
+  function loadSubjects() {
+    const pub = document.getElementById('pub').value;
+    const subs = pub ? Object.keys(data[pub]) : [];
+    fillSelect('sub', subs);
+    resetSelects(['cls', 'chap', 'qtype', 'old_q']);
+    hideAllFields();
+  }
 
-    <!-- Subject -->
-    <label>Subject:</label>
-    <select name="subject" id="sub" onchange="loadClasses()" required></select><br>
+  function loadClasses() {
+    const pub = document.getElementById('pub').value;
+    const sub = document.getElementById('sub').value;
+    const classes = (pub && sub) ? Object.keys(data[pub][sub]) : [];
+    fillSelect('cls', classes);
+    resetSelects(['chap', 'qtype', 'old_q']);
+    hideAllFields();
+  }
 
-    <!-- Class -->
-    <label>Class:</label>
-    <select name="class_name" id="cls" onchange="loadChapters()" required></select><br>
+  function loadChapters() {
+    const pub = document.getElementById('pub').value;
+    const sub = document.getElementById('sub').value;
+    const cls = document.getElementById('cls').value;
+    const chaps = (pub && sub && cls) ? Object.keys(data[pub][sub][cls]) : [];
+    fillSelect('chap', chaps);
+    resetSelects(['qtype', 'old_q']);
+    hideAllFields();
+  }
 
-    <!-- Chapter -->
-    <label>Chapter:</label>
-    <select name="chapter" id="chap" onchange="loadQtypes()" required></select><br>
+  function loadQtypes() {
+    const pub = document.getElementById('pub').value;
+    const sub = document.getElementById('sub').value;
+    const cls = document.getElementById('cls').value;
+    const chap = document.getElementById('chap').value;
+    const types = (pub && sub && cls && chap) ? Object.keys(data[pub][sub][cls][chap]) : [];
+    fillSelect('qtype', types);
+    resetSelects(['old_q']);
+    hideAllFields();
+  }
 
-    <!-- Question Type -->
-    <label>Type:</label>
-    <select name="qtype" id="qtype" onchange="loadQuestions()" required></select><br>
+  function loadQuestions() {
+    const pub = document.getElementById('pub').value;
+    const sub = document.getElementById('sub').value;
+    const cls = document.getElementById('cls').value;
+    const chap = document.getElementById('chap').value;
+    const type = document.getElementById('qtype').value;
+    let list = [];
 
-    <!-- Old Question -->
-    <label>Old Question:</label>
-    <select name="old_question" id="old_q" required></select><br>
+    if(type && data[pub][sub][cls][chap][type]){
+      const qlist = data[pub][sub][cls][chap][type];
 
-    <!-- Dynamic rename fields -->
-    <div id="rename_fields">
-      <!-- Fill in the Blanks / True/False / Answer / Manual -->
-      <div id="f_simple" class="box hidden">
-        <input type="text" name="new_question" placeholder="New Question">
-      </div>
-
-      <!-- Match the Following -->
-      <div id="f_match" class="box hidden">
-        <input type="text" name="new_left" placeholder="New Left (e.g., CPU)">
-        <input type="text" name="new_right" placeholder="New Right (e.g., Brain of Computer)">
-      </div>
-
-      <!-- Choose the Best Answer -->
-      <div id="f_mcq" class="box hidden">
-        <input type="text" name="new_question_mcq" placeholder="New Question"><br>
-        <input type="text" name="option1" placeholder="Option A">
-        <input type="text" name="option2" placeholder="Option B">
-        <input type="text" name="option3" placeholder="Option C">
-        <input type="text" name="option4" placeholder="Option D"><br>
-        <input type="text" name="answer" placeholder="Correct Answer">
-      </div>
-
-      <!-- Full Form -->
-      <div id="f_full" class="box hidden">
-        <input type="text" name="new_abbr" placeholder="Abbreviation (e.g., CPU)">
-        <input type="text" name="new_full" placeholder="Full Form (e.g., Central Processing Unit)">
-      </div>
-    </div>
-
-    <br>
-    <button type="submit">Rename</button>
-
-  </form>
-
-  <script>
-    const data = {{ data | tojson }};
-
-    function loadSubjects(){
-      const pub = document.getElementById("pub").value;
-      const subs = pub ? Object.keys(data[pub]) : [];
-      fillSelect("sub", subs); reset(["cls","chap","qtype","old_q"]);
-    }
-    function loadClasses(){
-      const pub = document.getElementById("pub").value;
-      const sub = document.getElementById("sub").value;
-      const cls = (pub && sub) ? Object.keys(data[pub][sub]) : [];
-      fillSelect("cls", cls); reset(["chap","qtype","old_q"]);
-    }
-    function loadChapters(){
-      const pub = document.getElementById("pub").value;
-      const sub = document.getElementById("sub").value;
-      const cls = document.getElementById("cls").value;
-      const chaps = (pub && sub && cls) ? Object.keys(data[pub][sub][cls]) : [];
-      fillSelect("chap", chaps); reset(["qtype","old_q"]);
-    }
-    function loadQtypes(){
-      const pub = document.getElementById("pub").value;
-      const sub = document.getElementById("sub").value;
-      const cls = document.getElementById("cls").value;
-      const chap = document.getElementById("chap").value;
-      const types = (pub && sub && cls && chap) ? Object.keys(data[pub][sub][cls][chap]) : [];
-      fillSelect("qtype", types); reset(["old_q"]);
-    }
-
-    function loadQuestions(){
-      const pub = document.getElementById("pub").value;
-      const sub = document.getElementById("sub").value;
-      const cls = document.getElementById("cls").value;
-      const chap = document.getElementById("chap").value;
-      const type = document.getElementById("qtype").value;
-      let list = [];
-
-      if(type && data[pub][sub][cls][chap][type]){
-        const qlist = data[pub][sub][cls][chap][type];
-
-        if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(type)){
-          list = qlist.map((q, i) => ({ idx: i, display: q }));
-          showForm("f_simple");
-
-        } else if(type==="Match the Following"){
-          list = qlist.map((pair, i) => {
-            const k = Object.keys(pair)[0];
-            return { idx: i, display: k + " : " + pair[k] };
-          });
-          showForm("f_match");
-
-        } else if(type==="Choose the Best Answer"){
-          list = qlist.map((mcq, i) => ({ idx: i, display: mcq.question }));
-          showForm("f_mcq");
-
-        } else if(type==="Full Form"){
-          list = qlist.map((ff, i) => {
-            const k = Object.keys(ff)[0];
-            return { idx: i, display: k + " : " + ff[k] };
-          });
-          showForm("f_full");
-        }
+      if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(type)){
+        list = qlist.map((q,i) => ({ idx: i, display: q.question }));
+        showField('field_fill_blank');
       }
-
-      fillSelect("old_q", list);
+      else if(type === "Match the Following"){
+        list = qlist.map((pair,i) => {
+          const k = Object.keys(pair)[0];
+          return { idx: i, display: k + " : " + pair[k] };
+        });
+        showField('field_match_following');
+      }
+      else if(type === "Choose the Best Answer"){
+        list = qlist.map((mcq,i) => ({ idx: i, display: mcq.question }));
+        showField('field_choose_best_answer');
+      }
+      else if(type === "Full Form"){
+        list = qlist.map((ff,i) => {
+          const k = Object.keys(ff)[0];
+          return { idx: i, display: k + " : " + ff[k] };
+        });
+        showField('field_full_form');
+      }
     }
 
-    function fillSelect(id, arr){
-      let opt = '<option value="" disabled selected>--Select--</option>';
-      arr.forEach((v,i)=>{
-        if (typeof v === "object") {
-          opt += `<option value="${v.idx}">${v.display}</option>`;
-        } else {
-          opt += `<option value="${v}">${v}</option>`;
-        }
-      });
-      document.getElementById(id).innerHTML = opt;
+    fillSelectOldQuestion(list);
+  }
+
+  function fillSelectOldQuestion(arr){
+    let opt = '<option value="" disabled selected>--Select--</option>';
+    arr.forEach(v => {
+      opt += `<option value="${v.idx}">${v.display}</option>`;
+    });
+    document.getElementById('old_q').innerHTML = opt;
+  }
+
+  function fillOldQuestion(){
+    const pub = document.getElementById('pub').value;
+    const sub = document.getElementById('sub').value;
+    const cls = document.getElementById('cls').value;
+    const chap = document.getElementById('chap').value;
+    const qtype = document.getElementById('qtype').value;
+    const old_idx = document.getElementById('old_q').value;
+
+    if(!old_idx){
+      hideAllFields();
+      return;
     }
 
+    const qlist = data[pub][sub][cls][chap][qtype];
+    const qdata = qlist[old_idx];
 
-    function reset(ids){
-      ids.forEach(id=>document.getElementById(id).innerHTML='<option value="" disabled selected>--Select--</option>');
+    console.log("Editing question data:", qdata);
+    
+    if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(type)){
+      // Check if qlist items are strings or objects
+      if(typeof qlist[0] === 'string'){
+        list = qlist.map((q,i) => ({ idx:i, display:q }));
+      } else {
+        list = qlist.map((q,i) => ({ idx:i, display:q.question }));
+      }
+      showField('field_fill_blank');
     }
 
-    function showForm(id){
-      ["f_simple","f_match","f_mcq","f_full"].forEach(f=>document.getElementById(f).classList.add("hidden"));
-      document.getElementById(id).classList.remove("hidden");
+    else if(qtype === "Match the Following"){
+      showField('field_match_following');
+      const key = Object.keys(qdata)[0];
+      document.getElementById('match_left').value = key || '';
+      document.getElementById('match_right').value = qdata[key] || '';
     }
+    else if(qtype === "Choose the Best Answer"){
+      showField('field_choose_best_answer');
+      document.getElementById('question_mcq').value = qdata.question || '';
+      document.querySelector('input[name="option1"]').value = qdata.options ? qdata.options[0] : '';
+      document.querySelector('input[name="option2"]').value = qdata.options ? qdata.options[1] : '';
+      document.querySelector('input[name="option3"]').value = qdata.options ? qdata.options[2] : '';
+      document.querySelector('input[name="option4"]').value = qdata.options ? qdata.options[3] : '';
+      document.getElementById('answer_mcq').value = qdata.answer || '';
+    }
+    else if(qtype === "Full Form"){
+      showField('field_full_form');
+      const key = Object.keys(qdata)[0];
+      document.getElementById('abbr').value = key || '';
+      document.getElementById('full_form').value = qdata[key] || '';
+    }
+  }
 
-    // Init publications
-    fillSelect("pub", Object.keys(data));
-  </script>
+  // Initialize publication select on page load
+  fillSelect('pub', Object.keys(data));
+</script>
+
 {% endblock %}
-

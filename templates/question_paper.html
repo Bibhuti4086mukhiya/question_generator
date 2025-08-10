@@ -12,13 +12,18 @@
     {% set qno = 1 %}
 
     {% if questions["Fill in the Blanks"] %}
-    <h3>{{ qno }}. Fill in the Blanks [{{ counts["Fill in the Blanks"] }} x {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }}]</h3>
-    <ol>
-        {% for q in questions["Fill in the Blanks"] %}
-        <li>{{ q }}</li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
+      <div class="section">
+        <h3>{{ qno }}. Fill in the Blanks [{{ counts["Fill in the Blanks"] }} x {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }}]</h3>
+
+        <p class="options">[{{ fill_options | join(', ') }}]</p>
+
+        <ol>
+          {% for question in questions["Fill in the Blanks"] %}
+            <li>{{ question }}</li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% set qno = qno + 1 %}
     {% endif %}
 
     {% if questions["True/False"] %}
@@ -33,7 +38,7 @@
 
     {% if questions["Match the Following"] %}
     <h3>{{ qno }}. Match the Following [{{ counts["Match the Following"] }} x {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }}]</h3>
-    <table border="1" cellpadding="5" cellspacing="0">
+    <table  cellpadding="5" cellspacing="0">
       <thead>
         <tr>
           <th>Column A</th>
@@ -78,14 +83,16 @@
     {% endif %}
 
     {% if questions["Manual Questions"] %}
-    <h3>{{ qno }}. Write Your View [{{ counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ counts["Manual Questions"] * marks["Manual Questions"] }}]</h3>
-    <ol type="a">
-        {% for question in questions["Manual Questions"] %}
-        <li>{{ question }}</li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
+      <h3>{{ qno }}. [{{ counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ counts["Manual Questions"] * marks["Manual Questions"] }}]</h3>
+      <pre style="font-family:inherit; white-space: pre-wrap;">
+    {% for q in questions["Manual Questions"] %}
+    {{ q }}
+    {% endfor %}
+      </pre>
+      {% set qno = qno + 1 %}
     {% endif %}
+
+
 
     {% if questions["Answer the Following"] %}
     <h3>{{ qno }}. Answer the Following [{{ counts["Answer the Following"] }} x {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }}]</h3>

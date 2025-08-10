@@ -266,6 +266,70 @@ def generate_question_paper():
         right = [v for k, v in selected_match]
         random.shuffle(right)
         formatted_questions["Match the Following"] = list(zip(left, right))
+        
+    
+    # Step 6: Handle Fill in the Blanks with random pick from all chapters
+    fib_all_questions = []
+    fib_all_answers = []
+
+    # Collect all fill-in-the-blanks from all selected chapters
+    for chapter in chapters:
+        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+        fib_raw = chapter_data.get("Fill in the Blanks", [])
+
+        for item in fib_raw:
+            if isinstance(item, dict):
+                fib_all_questions.append(item.get("question", ""))
+                fib_all_answers.append(item.get("answer", ""))
+            elif isinstance(item, str):
+                fib_all_questions.append(item)
+                fib_all_answers.append("")
+
+    fib_count = question_counts.get("Fill in the Blanks", 0)
+
+    # Pick random questions with matching answers
+    if fib_all_questions:
+        selected_indices = random.sample(range(len(fib_all_questions)), min(fib_count, len(fib_all_questions)))
+        fill_questions = [fib_all_questions[i] for i in selected_indices]
+        selected_answers = [fib_all_answers[i] for i in selected_indices]
+    else:
+        fill_questions = []
+        selected_answers = []
+
+    # Options = all correct answers for the selected questions, shuffled
+    options = list(dict.fromkeys([ans for ans in selected_answers if ans.strip() != ""]))
+    random.shuffle(options)
+
+    # Save for template rendering
+    formatted_questions["Fill in the Blanks"] = fill_questions
+    
+    manual_questions_text = request.form.get('manual_questions', '')
+    manual_mark = int(request.form.get('manual_mark', 0))
+    manual_output_format = request.form.get('manual_output_format', 'original')
+
+    manual_lines = manual_questions_text.split('\n')
+
+    if manual_output_format == 'numbered':
+        # Number each non-empty line, preserving spaces
+        numbered_lines = []
+        num = 1
+        for line in manual_lines:
+            if line.strip():
+                numbered_lines.append(f"{num}. {line}")
+                num += 1
+            else:
+                numbered_lines.append(line)  # keep empty lines
+        formatted_questions["Manual Questions"] = numbered_lines
+        question_counts["Manual Questions"] = num - 1  # each question counts
+        marks["Manual Questions"] = manual_mark  # per question mark
+
+    else:
+        # Original → keep block exactly as is, 1 question total
+        formatted_questions["Manual Questions"] = manual_lines
+        question_counts["Manual Questions"] = 1
+        marks["Manual Questions"] = manual_mark  # total mark for whole block
+
+
 
     # Step 7: Total marks
     total_marks = sum(question_counts[qtype] * marks.get(qtype, 0) for qtype in question_counts)
@@ -276,8 +340,10 @@ def generate_question_paper():
         questions=formatted_questions,
         marks=marks,
         total_marks=total_marks,
-        counts={qtype: len(formatted_questions[qtype]) for qtype in formatted_questions}
+        counts={qtype: len(formatted_questions[qtype]) for qtype in formatted_questions},
+        fill_options=options  # ✅ pass options here
     )
+
 
 
 @app.route('/add_question', methods=['GET', 'POST'])
@@ -303,6 +369,13 @@ def add_question():
             match_value = request.form.get("match_value", "").strip()
             if match_key and match_value:
                 data[publication][subject][class_name][chapter][qtype].append({match_key: match_value})
+        
+        elif qtype == "Fill in the Blanks":
+            question_text = request.form.get("fib_question", "").strip()
+            answer_text = request.form.get("fib_answer", "").strip()
+            if question_text and answer_text:
+                new_question = {"question": question_text, "answer": answer_text}
+                data[publication][subject][class_name][chapter][qtype].append(new_question)
 
         elif qtype == "Choose the Best Answer":
             question = request.form.get("best_answer_question", "").strip()
@@ -421,56 +494,50 @@ def rename_page():
 
     return render_template('rename.html', publications=publications, data=data)
 
-@app.route("/rename_question", methods=["GET", "POST"])
+@app.route('/rename_question', methods=['GET', 'POST'])
 def rename_question():
-    data = load_data()
+    if request.method == 'POST':
+        publication = request.form['publication']
+        subject = request.form['subject']
+        class_name = request.form['class_name']
+        chapter = request.form['chapter']
+        qtype = request.form['qtype']
+        old_index = int(request.form['old_question'])
 
-    if request.method == "POST":
-        pub = request.form["publication"]
-        sub = request.form["subject"]
-        cls = request.form["class_name"]
-        chap = request.form["chapter"]
-        qtype = request.form["qtype"]
-        idx = int(request.form["old_question"])   # index from dropdown
-        qlist = data[pub][sub][cls][chap][qtype]
+        with open('data.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
 
-        # Handle each type
+        qlist = data[publication][subject][class_name][chapter][qtype]
+
         if qtype in ["Fill in the Blanks", "True/False", "Answer the Following", "Manual Questions"]:
-            new_q = request.form["new_question"].strip()
-            if new_q:
-                qlist[idx] = new_q
-
+            qlist[old_index]['question'] = request.form['question_fill_blank']
+            qlist[old_index]['answer'] = request.form['answer_fill_blank']
         elif qtype == "Match the Following":
-            new_left = request.form["new_left"].strip()
-            new_right = request.form["new_right"].strip()
-            if new_left and new_right:
-                qlist[idx] = {new_left: new_right}
-
+            left = request.form['match_left']
+            right = request.form['match_right']
+            qlist[old_index] = {left: right}
         elif qtype == "Choose the Best Answer":
-            new_q = request.form["new_question_mcq"].strip()
-            new_opts = [
-                request.form["option1"].strip(),
-                request.form["option2"].strip(),
-                request.form["option3"].strip(),
-                request.form["option4"].strip(),
+            qlist[old_index]['question'] = request.form['question_mcq']
+            qlist[old_index]['options'] = [
+                request.form.get('option1', ''),
+                request.form.get('option2', ''),
+                request.form.get('option3', ''),
+                request.form.get('option4', '')
             ]
-            new_ans = request.form["answer"].strip()
-            qlist[idx] = {
-                "question": new_q,
-                "options": new_opts,
-                "answer": new_ans,
-            }
-
+            qlist[old_index]['answer'] = request.form['answer_mcq']
         elif qtype == "Full Form":
-            new_abbr = request.form["new_abbr"].strip()
-            new_full = request.form["new_full"].strip()
-            if new_abbr and new_full:
-                qlist[idx] = {new_abbr: new_full}
+            abbr = request.form['abbr']
+            full = request.form['full_form']
+            qlist[old_index] = {abbr: full}
 
-        save_data(data)
+        with open('data.json', 'w', encoding='utf-8') as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
+
+        # Just redirect without flash message
         return redirect(url_for('rename_question'))
 
-    return render_template("rename_question.html", data=data)
+    data = load_data()
+    return render_template('rename_question.html', data=data)
 
 
 @app.route('/delete_question', methods=['GET', 'POST'])

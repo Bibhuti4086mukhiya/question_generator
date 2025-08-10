@@ -5,239 +5,284 @@
 {% block content %}
 
 
-    <h2>Generate Question Paper</h2>
+<h2>Generate Question Paper</h2>
+
+<br>
+<form method="POST" action="/generate" id="question-form">
+
+    <!-- Publication Dropdown -->
+    <label>Publication:</label>
+    <select name="publication" id="publication" required>
+        <option value="">Select Publication</option>
+        {% for pub in publications %}
+        <option value="{{ pub }}">{{ pub }}</option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <!-- Subject Dropdown -->
+    <label>Subject:</label>
+    <select name="subject" id="subject" required disabled>
+        <option value="">Select Subject</option>
+    </select>
+    <br><br>
+
+    <!-- Class Dropdown -->
+    <label>Class:</label>
+    <select name="class" id="class" required disabled>
+        <option value="">Select Class</option>
+    </select>
+    <br><br>
+
+    <!-- Chapters Checkboxes -->
+    <div id="chapters-container">
+        <label>Chapters:</label>
+        <div id="chapters-list">
+            <!-- Dynamically loaded checkboxes -->
+        </div>
+    </div>
+    <br>
+
+    <h4>Select Number of Questions and Marks</h4>
+
+    <!-- Question Types Dynamic Section -->
+    <div id="question-types-container"></div>
+
+    <!-- Manual Questions Section (only textarea + marks) -->
+    <div style="margin-top:15px;">
+        <label><strong>Manual Questions:</strong></label><br>
+        <textarea name="manual_questions" rows="4" cols="60" placeholder="Write one question per line..."></textarea>
+        <br>
+        <label>Output Format for Manual Questions:</label>
+        <select name="manual_output_format" id="manual_output_format" style="margin-left:10px;">
+            <option value="numbered">Numbered (one line)</option>
+            <option value="original" selected>Original (multiline)</option>
+        </select>
+        <br><br>
+        <label>Marks per Manual Question:</label>
+        <input type="number" name="manual_mark" value="2" min="0" class="mark" data-type="manual" style="width:60px;">
+    </div>
+
+    <h4>Manual Questions Preview:</h4>
+    <div id="manual_output" style="white-space: pre-wrap; border: 1px solid #ccc; padding: 10px; min-height: 50px;">
+    </div>
+
 
     <br>
-    <form method="POST" action="/generate" id="question-form">
+    <strong>Total Marks:</strong> <span id="total-marks">0</span> Marks<br><br>
 
-        <!-- Publication Dropdown -->
-        <label>Publication:</label>
-        <select name="publication" id="publication" required>
-            <option value="">Select Publication</option>
-            {% for pub in publications %}
-            <option value="{{ pub }}">{{ pub }}</option>
-            {% endfor %}
-        </select>
-        <br><br>
+    <button type="submit">Generate Question Paper</button>
+</form>
 
-        <!-- Subject Dropdown -->
-        <label>Subject:</label>
-        <select name="subject" id="subject" required disabled>
-            <option value="">Select Subject</option>
-        </select>
-        <br><br>
+<!-- Total Marks Calculation Script -->
+<script>
+    function calculateTotalMarks() {
+        let total = 0;
+        const types = [
+            "fill", "tf", "match", "best", "ans", "fullform",
+            "oneword", "short", "long", "manual"
+        ];
 
-        <!-- Class Dropdown -->
-        <label>Class:</label>
-        <select name="class" id="class" required disabled>
-            <option value="">Select Class</option>
-        </select>
-        <br><br>
-
-        <!-- Chapters Checkboxes -->
-        <div id="chapters-container">
-            <label>Chapters:</label>
-            <div id="chapters-list">
-                <!-- Dynamically loaded checkboxes -->
-            </div>
-        </div>
-        <br>
-
-        <h4>Select Number of Questions and Marks</h4>
-
-        <!-- Question Types Dynamic Section -->
-        <div id="question-types-container"></div>
-
-        <!-- Manual Questions Section (only textarea + marks) -->
-        <div style="margin-top:15px;">
-            <label><strong>Manual Questions:</strong></label><br>
-            <textarea name="manual_questions" rows="4" cols="60"
-                placeholder="Write one question per line..."></textarea>
-            <br>
-            <label>Marks per Manual Question:</label>
-            <input type="number" name="manual_mark" value="2" min="0" class="mark" data-type="manual"
-                style="width:60px;">
-        </div>
-
-        <br>
-        <strong>Total Marks:</strong> <span id="total-marks">0</span> Marks<br><br>
-
-        <button type="submit">Generate Question Paper</button>
-    </form>
-
-    <!-- Total Marks Calculation Script -->
-    <script>
-        function calculateTotalMarks() {
-            let total = 0;
-            const types = [
-                "fill", "tf", "match", "best", "ans", "fullform",
-                "oneword", "short", "long", "manual"
-            ];
-
-            types.forEach(type => {
-                const count = parseInt(document.querySelector(`[data-type="${type}"].count`)?.value) || 0;
-                const mark = parseInt(document.querySelector(`[data-type="${type}"].mark`)?.value) || 0;
-                total += count * mark;
-            });
-
-            document.getElementById('total-marks').innerText = total;
-        }
-
-        window.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.count, .mark').forEach(input => {
-                input.addEventListener('input', calculateTotalMarks);
-            });
-            calculateTotalMarks();
-        });
-    </script>
-
-    <!-- Dynamic Dropdowns and Chapters Loader -->
-    <script>
-        $(document).ready(function () {
-
-            // When publication changes
-            $('#publication').change(function () {
-                const pub = $(this).val();
-                $('#subject').prop('disabled', true).html('<option>Loading...</option>');
-                $('#class').prop('disabled', true).html('<option>Select Class</option>');
-                $('#chapters-list').html('');
-                $('#question-types-container').html('');
-
-                if (pub) {
-                    $.getJSON('/get_subjects/' + encodeURIComponent(pub), function (data) {
-                        let options = '<option value="">Select Subject</option>';
-                        $.each(data.subjects, function (i, val) {
-                            options += `<option value="${val}">${val}</option>`;
-                        });
-                        $('#subject').html(options).prop('disabled', false);
-                    });
-                }
-            });
-
-            // When subject changes
-            $('#subject').change(function () {
-                const pub = $('#publication').val();
-                const sub = $(this).val();
-                $('#class').prop('disabled', true).html('<option>Loading...</option>');
-                $('#chapters-list').html('');
-                $('#question-types-container').html('');
-
-                if (pub && sub) {
-                    $.getJSON(`/get_classes/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}`, function (data) {
-                        let options = '<option value="">Select Class</option>';
-                        $.each(data.classes, function (i, val) {
-                            options += `<option value="${val}">${val}</option>`;
-                        });
-                        $('#class').html(options).prop('disabled', false);
-                    });
-                }
-            });
-
-            // When class changes
-            $('#class').change(function () {
-                const pub = $('#publication').val();
-                const sub = $('#subject').val();
-                const cls = $(this).val();
-                $('#chapters-list').html('Loading chapters...');
-                $('#question-types-container').html('');
-
-                if (pub && sub && cls) {
-                    $.getJSON(`/get_chapters/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}/${encodeURIComponent(cls)}`, function (data) {
-                        if (data.chapters.length > 0) {
-                            let html = '';
-                            $.each(data.chapters, function (i, val) {
-                                html += `<input type="checkbox" name="chapters" value="${val}" id="ch${i}"> 
-                                         <label for="ch${i}">${val}</label><br>`;
-                            });
-                            $('#chapters-list').html(html);
-                        } else {
-                            $('#chapters-list').html('No chapters found.');
-                        }
-                    });
-                }
-            });
+        types.forEach(type => {
+            const count = parseInt(document.querySelector(`[data-type="${type}"].count`)?.value) || 0;
+            const mark = parseInt(document.querySelector(`[data-type="${type}"].mark`)?.value) || 0;
+            total += count * mark;
         });
 
-        // When chapter selection changes
-        $(document).on("change", "input[name='chapters']", function () {
+        document.getElementById('total-marks').innerText = total;
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.count, .mark').forEach(input => {
+            input.addEventListener('input', calculateTotalMarks);
+        });
+        calculateTotalMarks();
+    });
+</script>
+
+<!-- Dynamic Dropdowns and Chapters Loader -->
+<script>
+    $(document).ready(function () {
+
+        // When publication changes
+        $('#publication').change(function () {
+            const pub = $(this).val();
+            $('#subject').prop('disabled', true).html('<option>Loading...</option>');
+            $('#class').prop('disabled', true).html('<option>Select Class</option>');
+            $('#chapters-list').html('');
+            $('#question-types-container').html('');
+
+            if (pub) {
+                $.getJSON('/get_subjects/' + encodeURIComponent(pub), function (data) {
+                    let options = '<option value="">Select Subject</option>';
+                    $.each(data.subjects, function (i, val) {
+                        options += `<option value="${val}">${val}</option>`;
+                    });
+                    $('#subject').html(options).prop('disabled', false);
+                });
+            }
+        });
+
+        // When subject changes
+        $('#subject').change(function () {
+            const pub = $('#publication').val();
+            const sub = $(this).val();
+            $('#class').prop('disabled', true).html('<option>Loading...</option>');
+            $('#chapters-list').html('');
+            $('#question-types-container').html('');
+
+            if (pub && sub) {
+                $.getJSON(`/get_classes/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}`, function (data) {
+                    let options = '<option value="">Select Class</option>';
+                    $.each(data.classes, function (i, val) {
+                        options += `<option value="${val}">${val}</option>`;
+                    });
+                    $('#class').html(options).prop('disabled', false);
+                });
+            }
+        });
+
+        // When class changes
+        $('#class').change(function () {
             const pub = $('#publication').val();
             const sub = $('#subject').val();
-            const cls = $('#class').val();
-            const chapters = $("input[name='chapters']:checked").map(function () {
-                return this.value;
-            }).get();
+            const cls = $(this).val();
+            $('#chapters-list').html('Loading chapters...');
+            $('#question-types-container').html('');
 
-            if (chapters.length > 0) {
-                $.ajax({
-                    url: "/get_question_types",
-                    method: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify({ publication: pub, subject: sub, class: cls, chapters: chapters }),
-                    success: function (data) {
-                        let html = "<h4></h4>";
-                        data.types.forEach(type => {
-                            if (type.toLowerCase().includes("manual")) {
-                                return; // skip manual in loop
-                            }
-                            let key = type.toLowerCase().replace(/ /g, "_");
-                            html += `
+            if (pub && sub && cls) {
+                $.getJSON(`/get_chapters/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}/${encodeURIComponent(cls)}`, function (data) {
+                    if (data.chapters.length > 0) {
+                        let html = '';
+                        $.each(data.chapters, function (i, val) {
+                            html += `<input type="checkbox" name="chapters" value="${val}" id="ch${i}"> 
+                                         <label for="ch${i}">${val}</label><br>`;
+                        });
+                        $('#chapters-list').html(html);
+                    } else {
+                        $('#chapters-list').html('No chapters found.');
+                    }
+                });
+            }
+        });
+    });
+
+    // When chapter selection changes
+    $(document).on("change", "input[name='chapters']", function () {
+        const pub = $('#publication').val();
+        const sub = $('#subject').val();
+        const cls = $('#class').val();
+        const chapters = $("input[name='chapters']:checked").map(function () {
+            return this.value;
+        }).get();
+
+        if (chapters.length > 0) {
+            $.ajax({
+                url: "/get_question_types",
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ publication: pub, subject: sub, class: cls, chapters: chapters }),
+                success: function (data) {
+                    let html = "<h4></h4>";
+                    data.types.forEach(type => {
+                        if (type.toLowerCase().includes("manual")) {
+                            return; // skip manual in loop
+                        }
+                        let key = type.toLowerCase().replace(/ /g, "_");
+                        html += `
                                 <label>${type}:</label><br>
                                 Questions: <input type="number" name="${key}_count" value="5" min="0" class="count" data-type="${key}">
                                 Marks per question: <input type="number" name="${key}_mark" value="1" min="0" class="mark" data-type="${key}"><br><br>
                             `;
-                        });
-                        $("#question-types-container").html(html);
+                    });
+                    $("#question-types-container").html(html);
 
-                        // Re-bind total marks calculation
-                        document.querySelectorAll('.count, .mark').forEach(input => {
-                            input.addEventListener('input', calculateTotalMarks);
-                        });
-                        calculateTotalMarks();
-                    },
-                    error: function () {
-                        $("#question-types-container").html("<p style='color:red;'>Error loading question types</p>");
-                    }
-                });
-            } else {
-                $("#question-types-container").html("");
-            }
-        });
-    </script>
-    <script>
-        function calculateTotalMarks() {
-            let total = 0;
-
-            // all normal question types
-            document.querySelectorAll('.count').forEach(countInput => {
-                const type = countInput.dataset.type;
-                const markInput = document.querySelector(`[data-type="${type}"].mark`);
-                const count = parseInt(countInput.value) || 0;
-                const mark = parseInt(markInput?.value) || 0;
-                total += count * mark;
+                    // Re-bind total marks calculation
+                    document.querySelectorAll('.count, .mark').forEach(input => {
+                        input.addEventListener('input', calculateTotalMarks);
+                    });
+                    calculateTotalMarks();
+                },
+                error: function () {
+                    $("#question-types-container").html("<p style='color:red;'>Error loading question types</p>");
+                }
             });
+        } else {
+            $("#question-types-container").html("");
+        }
+    });
+</script>
+<script>
+    function calculateTotalMarks() {
+        let total = 0;
 
-            // manual questions (textarea lines)
-            const textarea = document.querySelector("textarea[name='manual_questions']");
-            const manualMark = parseInt(document.querySelector("[data-type='manual']")?.value) || 0;
+        // all normal question types
+        document.querySelectorAll('.count').forEach(countInput => {
+            const type = countInput.dataset.type;
+            const markInput = document.querySelector(`[data-type="${type}"].mark`);
+            const count = parseInt(countInput.value) || 0;
+            const mark = parseInt(markInput?.value) || 0;
+            total += count * mark;
+        });
 
-            if (textarea) {
-                const lines = textarea.value
-                    .split("\n")
-                    .filter(line => line.trim().length > 0); // count only non-empty lines
-                total += lines.length * manualMark;
-            }
+        // manual questions (textarea lines)
+        const textarea = document.querySelector("textarea[name='manual_questions']");
+        const manualMark = parseInt(document.querySelector("[data-type='manual']")?.value) || 0;
 
-            document.getElementById('total-marks').innerText = total;
+        if (textarea) {
+            const lines = textarea.value
+                .split("\n")
+                .filter(line => line.trim().length > 0); // count only non-empty lines
+            total += lines.length * manualMark;
         }
 
-        // bind calculation to all inputs + textarea
-        window.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.count, .mark, textarea').forEach(input => {
-                input.addEventListener('input', calculateTotalMarks);
-            });
-            calculateTotalMarks(); // run once at load
+        document.getElementById('total-marks').innerText = total;
+    }
+
+    // bind calculation to all inputs + textarea
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.count, .mark, textarea').forEach(input => {
+            input.addEventListener('input', calculateTotalMarks);
         });
-    </script>
+        calculateTotalMarks(); // run once at load
+    });
+</script>
+<script>
+    function updateManualOutput() {
+    const textarea = document.querySelector("textarea[name='manual_questions']");
+    const format = document.getElementById("manual_output_format").value;
+    const manualOutputDiv = document.getElementById("manual_output");
+    
+    const lines = textarea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
+    
+    let outputText = '';
+    if (format === "numbered") {
+        outputText = lines.map((line, i) => `${i+1}.${line}`).join(' ');
+    } else {
+        // original multiline with blank lines preserved (use raw textarea value)
+        outputText = textarea.value;
+    }
+
+    manualOutputDiv.textContent = outputText;
+}
+
+// Update preview and recalc total marks on inputs change
+document.addEventListener('DOMContentLoaded', () => {
+    const textarea = document.querySelector("textarea[name='manual_questions']");
+    const formatSelect = document.getElementById("manual_output_format");
+
+    textarea.addEventListener('input', () => {
+        updateManualOutput();
+        calculateTotalMarks();
+    });
+    formatSelect.addEventListener('change', () => {
+        updateManualOutput();
+    });
+
+    updateManualOutput();
+});
+
+</script>
 
 
 {% endblock %}

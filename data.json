@@ -174,7 +174,19 @@
                         "The physical parts of a computer are called __________.",
                         "__________ is the part of the computer that carries out instructions.",
                         "The device used to type text into a computer is called a __________.",
-                        "The screen where results are displayed is called a __________."
+                        "The screen where results are displayed is called a __________.",
+                        {
+                            "question": "who am ....?sdfgbrfbhrtg",
+                            "answer": "i"
+                        },
+                        {
+                            "question": "hhahahha",
+                            "answer": "ha"
+                        },
+                        {
+                            "question": "wowosdrfgbfdbgvrfvbrfg",
+                            "answer": "ookdsfgvevef"
+                        }
                     ]
                 }
             }
@@ -190,13 +202,6 @@
                         "The sun gives us ____ and heat.",
                         "Water is important for ____.",
                         "Leaves help plants to ____."
-                    ],
-                    "True/False": [
-                        "false or true",
-                        "Animals make their own food. (False)",
-                        "The sun is a star. (True)",
-                        "Water is not important for life. (False)",
-                        "Leaves breathe for plants. (True)"
                     ],
                     "Match the Following": [
                         {
@@ -370,9 +375,9 @@
                 "Chapter 3": {
                     "Fill in the Blanks": [
                         "The earth orbits the ___.",
-                        "The moon shines by ____ the sun\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2s light.",
+                        "The moon shines by ____ the sunÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s light.",
                         "Stars are big balls of ____.",
-                        "Day and night happen because of the earth\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2s ___.",
+                        "Day and night happen because of the earthÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s ___.",
                         "Gravity pulls things ___."
                     ],
                     "True/False": [
@@ -493,15 +498,30 @@
             "Class 4": {
                 "Chapter 2": {
                     "Fill in the Blanks": [
-                        "Software helps the computer to ___.",
-                        "The CPU is called the ___ of the computer.",
-                        "We use a printer to ___ documents.",
-                        "A scanner is used to ___ images.",
-                        "Computers can work very ___."
+                        {
+                            "question": "Software helps the computer to ___.",
+                            "answer": "work"
+                        },
+                        {
+                            "question": "The CPU is called the ___ of the computer.",
+                            "answer": "brain"
+                        },
+                        {
+                            "question": "We use a printer to ___ documents.",
+                            "answer": "print"
+                        },
+                        {
+                            "question": "A scanner is used to ___ images.",
+                            "answer": "scan"
+                        },
+                        {
+                            "question": "Computers can work very ___.",
+                            "answer": "fast"
+                        }
                     ],
                     "True/False": [
                         "Software is a program. (True)",
-                        "CPU is the computer\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u00a2\u00e2\u20ac\u017e\u00c2\u00a2s brain. (True)",
+                        "CPU is the computerÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s brain. (True)",
                         "Printers scan documents. (False)",
                         "Scanners copy images. (True)",
                         "Computers are slow machines. (False)"
@@ -538,11 +558,26 @@
                 },
                 "Chapter 3": {
                     "Fill in the Blanks": [
-                        "Computers use ___ to connect to the internet.",
-                        "The internet helps us to ___ information.",
-                        "We use browsers to ___ websites.",
-                        "Emails are sent using ___.",
-                        "Wi-Fi is a ___ connection."
+                        {
+                            "question": "Computers use ___ to connect to the internet.",
+                            "answer": "modem"
+                        },
+                        {
+                            "question": "The internet helps us to ___ information.",
+                            "answer": "find"
+                        },
+                        {
+                            "question": "We use browsers to ___ websites.",
+                            "answer": "browse"
+                        },
+                        {
+                            "question": "Emails are sent using ___.",
+                            "answer": "SMTP"
+                        },
+                        {
+                            "question": "waefihqwe",
+                            "answer": "ok"
+                        }
                     ],
                     "True/False": [
                         "The internet connects computers worldwide. (True)",
@@ -582,7 +617,11 @@
                         "We save work on the ___ drive.",
                         "The desktop shows ___ files and folders.",
                         "Icons help us to ___ programs.",
-                        "We can delete files to ___ space."
+                        "We can delete files to ___ space.",
+                        {
+                            "question": "nice..............",
+                            "answer": "bibhuti"
+                        }
                     ],
                     "True/False": [
                         "Files contain data. (True)",
