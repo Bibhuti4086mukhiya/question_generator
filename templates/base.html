@@ -1,53 +1,74 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>{% block title %}My App{% endblock %}</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        button.active {
+            background-color: #ff6600;
+            color: white;
+            font-weight: bold;
+        }
+    </style>
+
 </head>
+
 <body>
 
-<!-- Simple Nav Bar -->
-<div style="display: flex; gap: 15px; margin-bottom: 20px;">
+    <!-- Simple Nav Bar -->
+    <div class="navbar">
+        <a href="{{ url_for('index') }}">
+            <button type="button" class="{% if request.endpoint == 'index' %}active{% endif %}">Home</button>
+        </a>
 
-    <a href="{{ url_for('index') }}">
-        <button type="button">Home</button>
-    </a>
+        <a href="{{ url_for('add_info') }}">
+            <button type="button" class="{% if request.endpoint == 'add_info' %}active{% endif %}">Add
+                Publication</button>
+        </a>
 
-    <a href="{{ url_for('add_info') }}">
-        <button type="button">Add Publication</button>
-    </a>
+        <a href="{{ url_for('add_question') }}">
+            <button type="button" class="{% if request.endpoint == 'add_question' %}active{% endif %}">Add
+                Question</button>
+        </a>
 
-    <a href="{{ url_for('add_question') }}">
-        <button type="button">Add Question</button>
-    </a>
+        <a href="{{ url_for('rename_page') }}">
+            <button type="button" class="{% if request.endpoint == 'rename_page' %}active{% endif %}">Rename
+                Publication</button>
+        </a>
 
-    <a href="{{ url_for('rename_page') }}">
-        <button type="button">Rename Publication</button>
-    </a>
+        <a href="{{ url_for('rename_question') }}">
+            <button type="button" class="{% if request.endpoint == 'rename_question' %}active{% endif %}">Edit
+                Question</button>
+        </a>
 
-    <a href="{{ url_for('rename_question') }}">
-        <button type="button">Edit Question</button>
-    </a>
+        <a href="{{ url_for('delete_question') }}">
+            <button type="button" class="{% if request.endpoint == 'delete_question' %}active{% endif %}">Delete
+                Questions</button>
+        </a>
 
-    <a href="{{ url_for('delete_question') }}">
-        <button type="button">Delete Questions</button>
-    </a>
+        <a href="{{ url_for('delete_page') }}">
+            <button type="button" class="{% if request.endpoint == 'delete_page' %}active{% endif %}">Delete
+                publications details</button>
+        </a>
 
-    <a href="{{ url_for('delete_page') }}">
-        <button type="button">Delete publications details</button>
-    </a>
+        <a href="{{ url_for('delete_question_type') }}">
+            <button type="button" class="{% if request.endpoint == 'delete_question_type' %}active{% endif %}">Delete
+                question type</button>
+        </a>
 
-    <a href="{{ url_for('view_questions') }}">
-        <button type="button">View Questions</button>
-    </a>
+        <a href="{{ url_for('view_questions') }}">
+            <button type="button" class="{% if request.endpoint == 'view_questions' %}active{% endif %}">View
+                Questions</button>
+        </a>
 
-    <a href="{{ url_for('delete_question_type') }}">
-        <button type="button">delete question type</button>
-    </a>
-</div>
 
-<!-- Page Content -->
-{% block content %}{% endblock %}
+    </div>
+
+
+    <!-- Page Content -->
+    {% block content %}{% endblock %}
 
 </body>
+
 </html>
