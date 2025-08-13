@@ -302,34 +302,27 @@ def generate_question_paper():
 
     # Save for template rendering
     formatted_questions["Fill in the Blanks"] = fill_questions
-    
-    manual_questions_text = request.form.get('manual_questions', '')
+        
+        
+    # Manual questions handling
+    manual_text = request.form.get('manual_questions', '')
     manual_mark = int(request.form.get('manual_mark', 0))
-    manual_output_format = request.form.get('manual_output_format', 'original')
+    manual_format = request.form.get('manual_output_format', 'original')  # 'numbered' or 'original'
 
-    manual_lines = manual_questions_text.split('\n')
+    # Remove empty lines and strip carriage returns
+    manual_lines = [line.strip().replace('\r', '') for line in manual_text.split('\n') if line.strip()]
 
-    if manual_output_format == 'numbered':
-        # Number each non-empty line, preserving spaces
-        numbered_lines = []
-        num = 1
-        for line in manual_lines:
-            if line.strip():
-                numbered_lines.append(f"{num}. {line}")
-                num += 1
-            else:
-                numbered_lines.append(line)  # keep empty lines
-        formatted_questions["Manual Questions"] = numbered_lines
-        question_counts["Manual Questions"] = num - 1  # each question counts
-        marks["Manual Questions"] = manual_mark  # per question mark
-
+    if manual_format == 'numbered':
+        # Number each line
+        formatted_questions["Manual Questions"] = [f"{i+1}. {line}" for i, line in enumerate(manual_lines)]
+        question_counts["Manual Questions"] = len(manual_lines)  # each line is one question
+        marks["Manual Questions"] = manual_mark
     else:
-        # Original → keep block exactly as is, 1 question total
+        # Original: all lines as one block
         formatted_questions["Manual Questions"] = manual_lines
-        question_counts["Manual Questions"] = 1
-        marks["Manual Questions"] = manual_mark  # total mark for whole block
-
-
+        question_counts["Manual Questions"] = 1  # entire block counts as 1 question
+        marks["Manual Questions"] = manual_mark
+    qno = 1
 
     # Step 7: Total marks
     total_marks = sum(question_counts[qtype] * marks.get(qtype, 0) for qtype in question_counts)
@@ -339,7 +332,9 @@ def generate_question_paper():
         subject=sub,
         questions=formatted_questions,
         marks=marks,
+        question_counts=question_counts,
         total_marks=total_marks,
+        qno = qno,
         counts={qtype: len(formatted_questions[qtype]) for qtype in formatted_questions},
         fill_options=options  # ✅ pass options here
     )

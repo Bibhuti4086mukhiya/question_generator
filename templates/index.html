@@ -74,37 +74,12 @@
     <button type="submit">Generate Question Paper</button>
 </form>
 
-<!-- Total Marks Calculation Script -->
-<script>
-    function calculateTotalMarks() {
-        let total = 0;
-        const types = [
-            "fill", "tf", "match", "best", "ans", "fullform",
-            "oneword", "short", "long", "manual"
-        ];
 
-        types.forEach(type => {
-            const count = parseInt(document.querySelector(`[data-type="${type}"].count`)?.value) || 0;
-            const mark = parseInt(document.querySelector(`[data-type="${type}"].mark`)?.value) || 0;
-            total += count * mark;
-        });
 
-        document.getElementById('total-marks').innerText = total;
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.count, .mark').forEach(input => {
-            input.addEventListener('input', calculateTotalMarks);
-        });
-        calculateTotalMarks();
-    });
-</script>
-
-<!-- Dynamic Dropdowns and Chapters Loader -->
 <script>
     $(document).ready(function () {
 
-        // When publication changes
+        // Publication change
         $('#publication').change(function () {
             const pub = $(this).val();
             $('#subject').prop('disabled', true).html('<option>Loading...</option>');
@@ -123,7 +98,7 @@
             }
         });
 
-        // When subject changes
+        // Subject change
         $('#subject').change(function () {
             const pub = $('#publication').val();
             const sub = $(this).val();
@@ -142,7 +117,7 @@
             }
         });
 
-        // When class changes
+        // Class change
         $('#class').change(function () {
             const pub = $('#publication').val();
             const sub = $('#subject').val();
@@ -156,7 +131,7 @@
                         let html = '';
                         $.each(data.chapters, function (i, val) {
                             html += `<input type="checkbox" name="chapters" value="${val}" id="ch${i}"> 
-                                         <label for="ch${i}">${val}</label><br>`;
+                                 <label for="ch${i}">${val}</label><br>`;
                         });
                         $('#chapters-list').html(html);
                     } else {
@@ -165,124 +140,101 @@
                 });
             }
         });
-    });
 
-    // When chapter selection changes
-    $(document).on("change", "input[name='chapters']", function () {
-        const pub = $('#publication').val();
-        const sub = $('#subject').val();
-        const cls = $('#class').val();
-        const chapters = $("input[name='chapters']:checked").map(function () {
-            return this.value;
-        }).get();
+        // Chapter selection change
+        $(document).on("change", "input[name='chapters']", function () {
+            const pub = $('#publication').val();
+            const sub = $('#subject').val();
+            const cls = $('#class').val();
+            const chapters = $("input[name='chapters']:checked").map(function () {
+                return this.value;
+            }).get();
 
-        if (chapters.length > 0) {
-            $.ajax({
-                url: "/get_question_types",
-                method: "POST",
-                contentType: "application/json",
-                data: JSON.stringify({ publication: pub, subject: sub, class: cls, chapters: chapters }),
-                success: function (data) {
-                    let html = "<h4></h4>";
-                    data.types.forEach(type => {
-                        if (type.toLowerCase().includes("manual")) {
-                            return; // skip manual in loop
-                        }
-                        let key = type.toLowerCase().replace(/ /g, "_");
-                        html += `
-                                <label>${type}:</label><br>
-                                Questions: <input type="number" name="${key}_count" value="5" min="0" class="count" data-type="${key}">
-                                Marks per question: <input type="number" name="${key}_mark" value="1" min="0" class="mark" data-type="${key}"><br><br>
-                            `;
-                    });
-                    $("#question-types-container").html(html);
-
-                    // Re-bind total marks calculation
-                    document.querySelectorAll('.count, .mark').forEach(input => {
-                        input.addEventListener('input', calculateTotalMarks);
-                    });
-                    calculateTotalMarks();
-                },
-                error: function () {
-                    $("#question-types-container").html("<p style='color:red;'>Error loading question types</p>");
-                }
-            });
-        } else {
-            $("#question-types-container").html("");
-        }
-    });
-</script>
-<script>
-    function calculateTotalMarks() {
-        let total = 0;
-
-        // all normal question types
-        document.querySelectorAll('.count').forEach(countInput => {
-            const type = countInput.dataset.type;
-            const markInput = document.querySelector(`[data-type="${type}"].mark`);
-            const count = parseInt(countInput.value) || 0;
-            const mark = parseInt(markInput?.value) || 0;
-            total += count * mark;
+            if (chapters.length > 0) {
+                $.ajax({
+                    url: "/get_question_types",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ publication: pub, subject: sub, class: cls, chapters: chapters }),
+                    success: function (data) {
+                        let html = "";
+                        data.types.forEach(type => {
+                            if (type.toLowerCase().includes("manual")) return;
+                            let key = type.toLowerCase().replace(/ /g, "_");
+                            html += `
+                            <label>${type}:</label><br>
+                            Questions: <input type="number" name="${key}_count" value="5" min="0" class="count" data-type="${key}">
+                            Marks per question: <input type="number" name="${key}_mark" value="1" min="0" class="mark" data-type="${key}"><br><br>
+                        `;
+                        });
+                        $("#question-types-container").html(html);
+                        $('.count, .mark').on('input', calculateTotalMarks);
+                        calculateTotalMarks();
+                    },
+                    error: function () {
+                        $("#question-types-container").html("<p style='color:red;'>Error loading question types</p>");
+                    }
+                });
+            } else {
+                $("#question-types-container").html("");
+            }
         });
 
-        // manual questions (textarea lines)
-        const textarea = document.querySelector("textarea[name='manual_questions']");
-        const manualMark = parseInt(document.querySelector("[data-type='manual']")?.value) || 0;
+        // Manual questions preview
+        function updateManualOutput() {
+            const textarea = $("textarea[name='manual_questions']")[0];
+            const format = $("#manual_output_format").val();
+            const manualOutputDiv = $("#manual_output")[0];
 
-        if (textarea) {
-            const lines = textarea.value
-                .split("\n")
-                .filter(line => line.trim().length > 0); // count only non-empty lines
-            total += lines.length * manualMark;
+            const lines = textarea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
+            let outputText = (format === "numbered") ? lines.map((line, i) => `${i + 1}. ${line}`).join('\n') : textarea.value;
+            manualOutputDiv.textContent = outputText;
         }
 
-        document.getElementById('total-marks').innerText = total;
-    }
-
-    // bind calculation to all inputs + textarea
-    window.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.count, .mark, textarea').forEach(input => {
-            input.addEventListener('input', calculateTotalMarks);
+        $("textarea[name='manual_questions'], #manual_output_format").on('input change', function () {
+            updateManualOutput();
+            calculateTotalMarks();
         });
-        calculateTotalMarks(); // run once at load
-    });
-</script>
-<script>
-    function updateManualOutput() {
-    const textarea = document.querySelector("textarea[name='manual_questions']");
-    const format = document.getElementById("manual_output_format").value;
-    const manualOutputDiv = document.getElementById("manual_output");
-    
-    const lines = textarea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
-    
-    let outputText = '';
-    if (format === "numbered") {
-        outputText = lines.map((line, i) => `${i+1}.${line}`).join(' ');
-    } else {
-        // original multiline with blank lines preserved (use raw textarea value)
-        outputText = textarea.value;
-    }
 
-    manualOutputDiv.textContent = outputText;
-}
-
-// Update preview and recalc total marks on inputs change
-document.addEventListener('DOMContentLoaded', () => {
-    const textarea = document.querySelector("textarea[name='manual_questions']");
-    const formatSelect = document.getElementById("manual_output_format");
-
-    textarea.addEventListener('input', () => {
         updateManualOutput();
         calculateTotalMarks();
     });
-    formatSelect.addEventListener('change', () => {
-        updateManualOutput();
+
+   function calculateTotalMarks() {
+    let total = 0;
+
+    // All normal question types
+    document.querySelectorAll('.count').forEach(countInput => {
+        const type = countInput.dataset.type;
+        const markInput = document.querySelector(`[data-type="${type}"].mark`);
+        const count = parseInt(countInput.value) || 0;
+        const mark = parseInt(markInput?.value) || 0;
+        total += count * mark;
     });
 
-    updateManualOutput();
-});
+    // Manual questions
+    const textarea = document.querySelector("textarea[name='manual_questions']");
+    const manualMark = parseInt(document.querySelector("[data-type='manual']")?.value) || 0;
+    const format = document.getElementById("manual_output_format")?.value;
+
+    if (textarea && manualMark > 0) {
+        const lines = textarea.value.split("\n").filter(line => line.trim().length > 0);
+
+        if (format === "numbered") {
+            total += lines.length * manualMark; // each line counts
+        } else if (format === "original") {
+            total += (lines.length > 0 ? 1 : 0) * manualMark; // only 1 question counts
+        }
+    }
+
+    // Update total marks display
+    document.getElementById('total-marks').innerText = total;
+}
 
 </script>
+
+
+
 
 
 {% endblock %}

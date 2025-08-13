@@ -83,7 +83,10 @@
     {% endif %}
 
     {% if questions["Manual Questions"] %}
-      <h3>{{ qno }}. [{{ counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ counts["Manual Questions"] * marks["Manual Questions"] }}]</h3>
+      {% set total_manual_marks = question_counts["Manual Questions"] * marks["Manual Questions"] %}
+      <h3>
+        {{ qno }}. [{{ question_counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ total_manual_marks }}]
+      </h3>
       <pre style="font-family:inherit; white-space: pre-wrap;">
     {% for q in questions["Manual Questions"] %}
     {{ q }}
@@ -91,6 +94,7 @@
       </pre>
       {% set qno = qno + 1 %}
     {% endif %}
+
 
 
 
