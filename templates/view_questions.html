@@ -4,8 +4,410 @@
 
 {% block content %}
 
+<style>
+    /* Container and Form Styling */
+    .view-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
 
-<h2>📚 View Questions</h2>
+    .view-header {
+        text-align: center;
+        color: white;
+        margin-bottom: 2rem;
+        font-size: 2.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .filter-form {
+        background: white;
+        padding: 2rem;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        color: #4a5568;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .form-select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 1rem;
+        background: white;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .form-select:hover {
+        border-color: #667eea;
+    }
+
+    .form-select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .view-button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin: 0 auto;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .view-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    /* Questions Display Styling */
+    .questions-container {
+        background: white;
+        border-radius: 15px;
+        padding: 2rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    .questions-header {
+        color: #2d3748;
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid #667eea;
+    }
+
+    .chapter-section {
+        margin-bottom: 2.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f6f8fb 0%, #ffffff 100%);
+        border-radius: 12px;
+        border-left: 4px solid #667eea;
+    }
+
+    .chapter-title {
+        color: #667eea;
+        font-size: 1.4rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .question-type {
+        background: #667eea;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        font-weight: 600;
+        margin: 1rem 0;
+        display: inline-block;
+    }
+
+    .question-list {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0;
+    }
+
+    .question-item {
+        background: white;
+        padding: 1rem 1.5rem;
+        margin-bottom: 1rem;
+        border-radius: 10px;
+        border: 1px solid #e2e8f0;
+        transition: all 0.3s ease;
+        position: relative;
+        padding-left: 2.5rem;
+    }
+
+    .question-item:before {
+        content: "▸";
+        position: absolute;
+        left: 1rem;
+        color: #667eea;
+        font-weight: bold;
+    }
+
+    .question-item:hover {
+        transform: translateX(5px);
+        border-color: #667eea;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+    }
+
+    .mcq-question {
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 0.5rem;
+    }
+
+    .mcq-options {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.5rem;
+        margin: 0.5rem 0;
+        padding-left: 1rem;
+    }
+
+    .mcq-option {
+        padding: 0.25rem 0.5rem;
+        background: #f7fafc;
+        border-radius: 5px;
+        border: 1px solid #e2e8f0;
+    }
+
+    .mcq-answer {
+        color: #48bb78;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background: #f0fff4;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
+    .match-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.5rem;
+        background: #f7fafc;
+        border-radius: 5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .match-left {
+        font-weight: 600;
+        color: #667eea;
+        min-width: 150px;
+    }
+
+    .match-arrow {
+        color: #cbd5e0;
+        font-size: 1.2rem;
+    }
+
+    .match-right {
+        color: #2d3748;
+    }
+
+    .fill-blank {
+        background: #fef5e7;
+        padding: 0.75rem;
+        border-radius: 5px;
+        border-left: 3px solid #f39c12;
+    }
+
+    .full-form {
+        background: #ebf8ff;
+        padding: 0.75rem;
+        border-radius: 5px;
+        border-left: 3px solid #3182ce;
+    }
+
+    .full-form-abbr {
+        font-weight: 600;
+        color: #3182ce;
+    }
+
+    .full-form-text {
+        color: #2d3748;
+        margin-left: 0.5rem;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        color: #718096;
+    }
+
+    .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .view-container {
+            padding: 1rem;
+        }
+
+        .mcq-options {
+            grid-template-columns: 1fr;
+        }
+
+        .match-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="view-container">
+    <h2 class="view-header">📚 View Questions</h2>
+
+    <div class="filter-form">
+        <form method="POST">
+            <div class="form-group">
+                <label class="form-label">Publication (required):</label>
+                <select name="publication" id="publication" class="form-select" onchange="loadSubjects()" required>
+                    <option value="">--Select Publication--</option>
+                    {% for pub in publications %}
+                    <option value="{{ pub }}" {% if selected_pub == pub %}selected{% endif %}>{{ pub }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Subject (required):</label>
+                <select name="subject" id="subject" class="form-select" onchange="loadClasses()" required>
+                    <option value="">--Select Subject--</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Class (required):</label>
+                <select name="class_name" id="class_name" class="form-select" onchange="loadChapters()" required>
+                    <option value="">--Select Class--</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Chapter (optional):</label>
+                <select name="chapter" id="chapter" class="form-select">
+                    <option value="">--All Chapters--</option>
+                </select>
+            </div>
+
+            <button type="submit" class="view-button">
+                <span>👁</span>
+                <span>View Questions</span>
+            </button>
+        </form>
+    </div>
+
+    {% if questions_data %}
+    <div class="questions-container">
+        <h3 class="questions-header">📖 Questions</h3>
+        
+        {% for chapter, qtypes in questions_data.items() %}
+        <div class="chapter-section">
+            <h4 class="chapter-title">
+                <span>📘</span>
+                <span>Chapter: {{ chapter }}</span>
+            </h4>
+
+            {% for qtype, qlist in qtypes.items() %}
+            <div class="question-type">{{ qtype }}</div>
+            
+            <ul class="question-list">
+                {% if qtype == "Match the Following" %}
+                    {% for pair in qlist %}
+                        {% for left, right in pair.items() %}
+                        <li class="question-item">
+                            <div class="match-item">
+                                <span class="match-left">{{ left }}</span>
+                                <span class="match-arrow">→</span>
+                                <span class="match-right">{{ right }}</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    {% endfor %}
+
+                {% elif qtype == "Choose the Best Answer" %}
+                    {% for mcq in qlist %}
+                    <li class="question-item">
+                        <div class="mcq-question">{{ mcq.question }}</div>
+                        <div class="mcq-options">
+                            <div class="mcq-option">a) {{ mcq.options[0] }}</div>
+                            <div class="mcq-option">b) {{ mcq.options[1] }}</div>
+                            <div class="mcq-option">c) {{ mcq.options[2] }}</div>
+                            <div class="mcq-option">d) {{ mcq.options[3] }}</div>
+                        </div>
+                        <div class="mcq-answer">✓ Answer: {{ mcq.answer }}</div>
+                    </li>
+                    {% endfor %}
+
+                {% elif qtype == "Full Form" %}
+                    {% for abbr in qlist %}
+                    <li class="question-item">
+                        <div class="full-form">
+                            {% if abbr is mapping %}
+                                {% for k, v in abbr.items() %}
+                                <span class="full-form-abbr">{{ k }}</span>
+                                <span>=</span>
+                                <span class="full-form-text">{{ v }}</span>
+                                {% endfor %}
+                            {% else %}
+                                {{ abbr }}
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                {% elif qtype == "Fill in the Blanks" %}
+                    {% for q in qlist %}
+                    <li class="question-item">
+                        <div class="fill-blank">
+                            {% if q is mapping %}
+                                {{ q.question }}
+                            {% else %}
+                                {{ q }}
+                            {% endif %}
+                        </div>
+                    </li>
+                    {% endfor %}
+
+                {% else %}
+                    {% for q in qlist %}
+                    <li class="question-item">{{ q }}</li>
+                    {% endfor %}
+                {% endif %}
+            </ul>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="questions-container">
+        <div class="empty-state">
+            <div class="empty-icon">📭</div>
+            <h3>No Questions to Display</h3>
+            <p>Please select publication, subject, and class to view questions.</p>
+        </div>
+    </div>
+    {% endif %}
+</div>
 
 <script>
     const jsonData = {{ data | tojson | safe }};
@@ -53,90 +455,4 @@
     }
 </script>
 
-<form method="POST">
-    <!-- Publication -->
-    <label>Publication (required):</label>
-    <select name="publication" id="publication" onchange="loadSubjects()" required>
-        <option value="">--Select Publication--</option>
-        {% for pub in publications %}
-        <option value="{{ pub }}" {% if selected_pub == pub %}selected{% endif %}>{{ pub }}</option>
-        {% endfor %}
-    </select><br><br>
-
-    <!-- Subject -->
-    <label>Subject (required):</label>
-    <select name="subject" id="subject" onchange="loadClasses()" required>
-        <option value="">--Select Subject--</option>
-    </select><br><br>
-
-    <!-- Class -->
-    <label>Class (required):</label>
-    <select name="class_name" id="class_name" onchange="loadChapters()" required>
-        <option value="">--Select Class--</option>
-    </select><br><br>
-
-    <!-- Chapter -->
-    <label>Chapter (optional):</label>
-    <select name="chapter" id="chapter">
-        <option value="">--All Chapters--</option>
-    </select><br><br>
-
-    <button type="submit">👁 View Questions</button>
-</form>
-{% if questions_data %}
-    <h3>📖 Questions</h3>
-    {% for chapter, qtypes in questions_data.items() %}
-        <h4>📘 Chapter: {{ chapter }}</h4>
-
-        {% for qtype, qlist in qtypes.items() %}
-            <strong>{{ qtype }}</strong>
-            <ul>
-                {% if qtype == "Match the Following" %}
-                    {% for pair in qlist %}
-                        {% for left, right in pair.items() %}
-                            <li>{{ left }} → {{ right }}</li>
-                        {% endfor %}
-                    {% endfor %}
-
-                {% elif qtype == "Choose the Best Answer" %}
-                    {% for mcq in qlist %}
-                        <li>
-                            {{ mcq.question }}<br>
-                            a) {{ mcq.options[0] }} &nbsp;
-                            b) {{ mcq.options[1] }} &nbsp;
-                            c) {{ mcq.options[2] }} &nbsp;
-                            d) {{ mcq.options[3] }} <br>
-                            <em>Answer: {{ mcq.answer }}</em>
-                        </li>
-                    {% endfor %}
-
-                {% elif qtype == "Full Form" %}
-                    {% for abbr in qlist %}
-                        {% if abbr is mapping %}
-                            {% for k, v in abbr.items() %}
-                                <li>{{ k }} = {{ v }}</li>
-                            {% endfor %}
-                        {% else %}
-                            <li>{{ abbr }}</li>
-                        {% endif %}
-                    {% endfor %}
-
-                {% elif qtype == "Fill in the Blanks" %}
-                    {% for q in qlist %}
-                        {% if q is mapping %}
-                            <li>{{ q.question }}</li>
-                        {% else %}
-                            <li>{{ q }}</li>
-                        {% endif %}
-                    {% endfor %}
-
-                {% else %}
-                    {% for q in qlist %}
-                        <li>{{ q }}</li>
-                    {% endfor %}
-                {% endif %}
-            </ul>
-        {% endfor %}
-    {% endfor %}
-{% endif %}
 {% endblock %}
