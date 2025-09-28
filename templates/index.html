@@ -3,9 +3,9 @@
 {% block title %}Generate Question Paper{% endblock %}
 
 {% block content %}
-<div class="w-full">
+<div class="px-4 sm:px-0">
     <!-- Header Section -->
-    <div class=" w-full mb-8">
+    <div class="mb-8">
         <div class="flex items-center mb-2">
             <div class="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-lg mr-4">
                 <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -20,7 +20,7 @@
     </div>
 
     <!-- Main Form Card -->
-    <div class="w-full bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
         <form method="POST" action="/generate" id="question-form" class="p-8">
             
             <!-- Selection Section -->
