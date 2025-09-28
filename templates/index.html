@@ -172,4 +172,306 @@
             <!-- Submit Button -->
             <div class="flex justify-center">
                 <button type="submit" 
-                        class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring
+                        class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-4 focus:ring-blue-300 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <svg class="w-6 h-6 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Generate Question Paper
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-200"></div>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Enhanced JavaScript with improved styling -->
+<script>
+    $(document).ready(function () {
+        // Add loading states and animations
+        function showLoading(element, text = 'Loading...') {
+            element.prop('disabled', true).html(`
+                <div class="flex items-center justify-center">
+                    <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span>${text}</span>
+                </div>
+            `);
+        }
+
+        // Publication change
+        $('#publication').change(function () {
+            const pub = $(this).val();
+            const subjectSelect = $('#subject');
+            const classSelect = $('#class');
+            
+            showLoading(subjectSelect);
+            classSelect.prop('disabled', true).html('<option value="">Select Class</option>').addClass('bg-gray-100');
+            $('#chapters-list').html('');
+            $('#question-types-container').html('');
+
+            if (pub) {
+                $.getJSON('/get_subjects/' + encodeURIComponent(pub), function (data) {
+                    let options = '<option value="">Select Subject</option>';
+                    $.each(data.subjects, function (i, val) {
+                        options += `<option value="${val}">${val}</option>`;
+                    });
+                    subjectSelect.html(options).prop('disabled', false).removeClass('bg-gray-100').addClass('bg-white');
+                }).fail(function() {
+                    subjectSelect.html('<option value="">Error loading subjects</option>');
+                });
+            }
+        });
+
+        // Subject change
+        $('#subject').change(function () {
+            const pub = $('#publication').val();
+            const sub = $(this).val();
+            const classSelect = $('#class');
+            
+            showLoading(classSelect);
+            $('#chapters-list').html('');
+            $('#question-types-container').html('');
+
+            if (pub && sub) {
+                $.getJSON(`/get_classes/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}`, function (data) {
+                    let options = '<option value="">Select Class</option>';
+                    $.each(data.classes, function (i, val) {
+                        options += `<option value="${val}">${val}</option>`;
+                    });
+                    classSelect.html(options).prop('disabled', false).removeClass('bg-gray-100').addClass('bg-white');
+                }).fail(function() {
+                    classSelect.html('<option value="">Error loading classes</option>');
+                });
+            }
+        });
+
+        // Class change
+        $('#class').change(function () {
+            const pub = $('#publication').val();
+            const sub = $('#subject').val();
+            const cls = $(this).val();
+            const chaptersContainer = $('#chapters-list');
+            
+            chaptersContainer.html(`
+                <div class="col-span-full flex items-center justify-center py-8">
+                    <svg class="animate-spin h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <span class="ml-2 text-gray-600">Loading chapters...</span>
+                </div>
+            `);
+            $('#question-types-container').html('');
+
+            if (pub && sub && cls) {
+                $.getJSON(`/get_chapters/${encodeURIComponent(pub)}/${encodeURIComponent(sub)}/${encodeURIComponent(cls)}`, function (data) {
+                    if (data.chapters.length > 0) {
+                        let html = '';
+                        $.each(data.chapters, function (i, val) {
+                            html += `
+                                <label class="flex items-center p-3 bg-white rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 transition-all duration-200 cursor-pointer group">
+                                    <input type="checkbox" name="chapters" value="${val}" id="ch${i}" 
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <span class="ml-3 text-sm font-medium text-gray-700 group-hover:text-blue-700">${val}</span>
+                                </label>
+                            `;
+                        });
+                        chaptersContainer.html(html);
+                    } else {
+                        chaptersContainer.html(`
+                            <div class="col-span-full text-center py-8">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                                <p class="text-gray-500 mt-2">No chapters found.</p>
+                            </div>
+                        `);
+                    }
+                }).fail(function() {
+                    chaptersContainer.html(`
+                        <div class="col-span-full text-center py-8">
+                            <p class="text-red-500">Error loading chapters. Please try again.</p>
+                        </div>
+                    `);
+                });
+            }
+        });
+
+        // Chapter selection change
+        $(document).on("change", "input[name='chapters']", function () {
+            const pub = $('#publication').val();
+            const sub = $('#subject').val();
+            const cls = $('#class').val();
+            const chapters = $("input[name='chapters']:checked").map(function () {
+                return this.value;
+            }).get();
+
+            if (chapters.length > 0) {
+                $('#question-types-container').html(`
+                    <div class="flex items-center justify-center py-8">
+                        <svg class="animate-spin h-8 w-8 text-indigo-500" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span class="ml-2 text-gray-600">Loading question types...</span>
+                    </div>
+                `);
+
+                $.ajax({
+                    url: "/get_question_types",
+                    method: "POST",
+                    contentType: "application/json",
+                    data: JSON.stringify({ publication: pub, subject: sub, class: cls, chapters: chapters }),
+                    success: function (data) {
+                        let html = "";
+                        data.types.forEach(type => {
+                            if (type.toLowerCase().includes("manual")) return;
+                            let key = type.toLowerCase().replace(/ /g, "_");
+                            html += `
+                                <div class="bg-white rounded-lg border border-gray-200 p-6 hover:shadow-md transition-shadow duration-200">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                        <div class="w-3 h-3 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full mr-3"></div>
+                                        ${type}
+                                    </h4>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Number of Questions</label>
+                                            <input type="number" name="${key}_count" value="5" min="0" 
+                                                   class="count w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm" 
+                                                   data-type="${key}">
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">Marks per Question</label>
+                                            <input type="number" name="${key}_mark" value="1" min="0" 
+                                                   class="mark w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm" 
+                                                   data-type="${key}">
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        $("#question-types-container").html(html);
+                        $('.count, .mark').on('input', calculateTotalMarks);
+                        calculateTotalMarks();
+                    },
+                    error: function () {
+                        $("#question-types-container").html(`
+                            <div class="bg-red-50 border border-red-200 rounded-lg p-6">
+                                <p class="text-red-700 flex items-center">
+                                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Error loading question types. Please try again.
+                                </p>
+                            </div>
+                        `);
+                    }
+                });
+            } else {
+                $("#question-types-container").html("");
+            }
+        });
+
+        // Manual questions preview with enhanced styling
+        function updateManualOutput() {
+            const textarea = $("textarea[name='manual_questions']")[0];
+            const format = $("#manual_output_format").val();
+            const manualOutputDiv = $("#manual_output")[0];
+
+            const lines = textarea.value.split('\n').map(line => line.trim()).filter(line => line !== '');
+            let outputText = '';
+            
+            if (lines.length === 0) {
+                outputText = 'No manual questions added yet...';
+                manualOutputDiv.className = manualOutputDiv.className.replace('text-gray-700', 'text-gray-400');
+            } else {
+                outputText = (format === "numbered") ? lines.map((line, i) => `${i + 1}. ${line}`).join('\n') : textarea.value;
+                manualOutputDiv.className = manualOutputDiv.className.replace('text-gray-400', 'text-gray-700');
+            }
+            
+            manualOutputDiv.textContent = outputText;
+        }
+
+        $("textarea[name='manual_questions'], #manual_output_format").on('input change', function () {
+            updateManualOutput();
+            calculateTotalMarks();
+        });
+
+        updateManualOutput();
+        calculateTotalMarks();
+    });
+
+    function calculateTotalMarks() {
+        let total = 0;
+
+        // All normal question types
+        document.querySelectorAll('.count').forEach(countInput => {
+            const type = countInput.dataset.type;
+            const markInput = document.querySelector(`[data-type="${type}"].mark`);
+            const count = parseInt(countInput.value) || 0;
+            const mark = parseInt(markInput?.value) || 0;
+            total += count * mark;
+        });
+
+        // Manual questions
+        const textarea = document.querySelector("textarea[name='manual_questions']");
+        const manualMark = parseInt(document.querySelector("[data-type='manual']")?.value) || 0;
+        const format = document.getElementById("manual_output_format")?.value;
+
+        if (textarea && manualMark > 0) {
+            const lines = textarea.value.split("\n").filter(line => line.trim().length > 0);
+
+            if (format === "numbered") {
+                total += lines.length * manualMark; // each line counts
+            } else if (format === "original") {
+                total += (lines.length > 0 ? 1 : 0) * manualMark; // only 1 question counts
+            }
+        }
+
+        // Update total marks display with animation
+        const totalMarksElement = document.getElementById('total-marks');
+        if (totalMarksElement.innerText != total.toString()) {
+            totalMarksElement.style.transform = 'scale(1.1)';
+            setTimeout(() => {
+                totalMarksElement.style.transform = 'scale(1)';
+            }, 150);
+        }
+        totalMarksElement.innerText = total;
+    }
+</script>
+
+<style>
+    /* Custom styles for enhanced interactivity */
+    .count, .mark {
+        transition: all 0.2s ease;
+    }
+    
+    .count:focus, .mark:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+    }
+    
+    /* Smooth transitions for total marks */
+    #total-marks {
+        transition: transform 0.15s ease;
+    }
+    
+    /* Enhanced checkbox styles */
+    input[type="checkbox"]:checked {
+        background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='white' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='m13.854 3.646-7.5 7.5a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6 10.293l7.146-7.147a.5.5 0 0 1 .708.708z'/%3e%3c/svg%3e");
+    }
+    
+    /* Loading states */
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+    }
+</style>
+
+{% endblock %}
