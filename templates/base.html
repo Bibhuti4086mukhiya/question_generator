@@ -1,548 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="h-full bg-white">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Question Bank System{% endblock %}</title>
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8f9fa;
-            color: #333;
-            line-height: 1.6;
-        }
-
-        /* Navbar Styles */
-        .navbar {
-            background: white;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 1rem;
-            height: 60px;
-        }
-
-        /* Logo/Brand */
-        .navbar-brand {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            text-decoration: none;
-            color: #333;
-            font-weight: 600;
-            font-size: 1.25rem;
-            transition: color 0.2s;
-        }
-
-        .navbar-brand:hover {
-            color: #6366f1;
-        }
-
-        .brand-icon {
-            font-size: 1.5rem;
-        }
-
-        /* Navigation Menu */
-        .navbar-menu {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            list-style: none;
-        }
-
-        .nav-item {
-            position: relative;
-        }
-
-        .nav-link {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            color: #666;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .nav-link:hover {
-            background: #f1f3f5;
-            color: #333;
-        }
-
-        .nav-link.active {
-            background: #6366f1;
-            color: white;
-        }
-
-        .nav-icon {
-            font-size: 1.1rem;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Dropdown Styles */
-        .dropdown {
-            position: relative;
-        }
-
-        .dropdown-toggle {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            color: #666;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-            font-weight: 500;
-            cursor: pointer;
-            background: none;
-            border: none;
-            white-space: nowrap;
-        }
-
-        .dropdown-toggle:hover {
-            background: #f1f3f5;
-            color: #333;
-        }
-
-        .dropdown-arrow {
-            font-size: 0.7rem;
-            transition: transform 0.2s;
-            margin-left: 0.25rem;
-        }
-
-        .dropdown.active .dropdown-arrow {
-            transform: rotate(180deg);
-        }
-
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            min-width: 200px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.2s;
-            margin-top: 0.5rem;
-            padding: 0.5rem;
-        }
-
-        .dropdown:hover .dropdown-menu,
-        .dropdown.active .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .dropdown-item {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            padding: 0.625rem 1rem;
-            color: #666;
-            text-decoration: none;
-            border-radius: 6px;
-            transition: all 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .dropdown-item:hover {
-            background: #f1f3f5;
-            color: #333;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background: #e5e7eb;
-            margin: 0.5rem 0;
-        }
-
-        /* Mobile Menu Toggle */
-        .mobile-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #666;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        /* Main Content */
-        .main-content {
-            min-height: calc(100vh - 120px);
-            padding: 2rem 1rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Footer */
-        .footer {
-            background: white;
-            border-top: 1px solid #e5e7eb;
-            padding: 1.5rem;
-            text-align: center;
-            color: #666;
-            font-size: 0.875rem;
-        }
-
-        .footer-content {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Flash Messages */
-        .flash-messages {
-            max-width: 1200px;
-            margin: 1rem auto;
-            padding: 0 1rem;
-        }
-
-        .flash-message {
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            animation: slideDown 0.3s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                transform: translateY(-20px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
+    <title>{% block title %}Question Bank{% endblock %}</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.2s ease-out',
+                        'slide-down': 'slideDown 0.2s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        slideDown: {
+                            '0%': { opacity: '0', transform: 'translateY(-8px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        }
+                    }
+                }
             }
         }
-
-        .flash-success {
-            background: #d1fae5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
-        }
-
-        .flash-error {
-            background: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
-        }
-
-        .flash-info {
-            background: #dbeafe;
-            color: #1e40af;
-            border: 1px solid #93c5fd;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .mobile-toggle {
-                display: block;
-            }
-
-            .navbar-menu {
-                position: fixed;
-                top: 60px;
-                left: -100%;
-                width: 100%;
-                height: calc(100vh - 60px);
-                background: white;
-                flex-direction: column;
-                align-items: stretch;
-                padding: 1rem;
-                transition: left 0.3s;
-                overflow-y: auto;
-                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-            }
-
-            .navbar-menu.active {
-                left: 0;
-            }
-
-            .nav-item {
-                width: 100%;
-            }
-
-            .nav-link,
-            .dropdown-toggle {
-                width: 100%;
-                justify-content: space-between;
-                padding: 0.75rem 1rem;
-            }
-
-            .dropdown-menu {
-                position: static;
-                opacity: 1;
-                visibility: visible;
-                transform: none;
-                box-shadow: none;
-                background: #f8f9fa;
-                margin-top: 0.5rem;
-                display: none;
-            }
-
-            .dropdown.active .dropdown-menu {
-                display: block;
-            }
-
-            .dropdown-item {
-                padding-left: 2rem;
-            }
-        }
-
-        /* Utility Classes */
-        .text-center {
-            text-align: center;
-        }
-
-        .mt-2 {
-            margin-top: 1rem;
-        }
-
-        .mb-2 {
-            margin-bottom: 1rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+    </script>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <a href="{{ url_for('index') }}" class="navbar-brand">
-                <span class="brand-icon">📚</span>
-                <span>Question Bank</span>
-            </a>
 
-            <button class="mobile-toggle" onclick="toggleMobileMenu()">
-                <span id="menu-icon">☰</span>
-            </button>
+<body class="h-full flex flex-col bg-white min-h-screen">
+    <!-- Modern Navigation Bar -->
+    <nav class="bg-white border-b border-gray-100 sticky top-0 z-40 backdrop-blur-sm bg-white/95">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo/Brand -->
+                <div class="flex items-center space-x-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary-600 to-primary-700 flex items-center justify-center shadow-sm">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-semibold text-gray-900">QuestionBank</h1>
+                </div>
 
-            <ul class="navbar-menu" id="navbar-menu">
-                <li class="nav-item">
-                    <a href="{{ url_for('index') }}" class="nav-link {{ 'active' if request.endpoint == 'index' }}">
-                        <span class="nav-icon">🏠</span>
-                        <span>Home</span>
+                <!-- Desktop Navigation -->
+                <div class="hidden lg:flex items-center space-x-1">
+                    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}nav-link-active{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                        </svg>
+                        Home
                     </a>
-                </li>
 
-                <!-- Questions Dropdown -->
-                <li class="nav-item dropdown">
-                    <button class="dropdown-toggle" onclick="toggleDropdown(this.parentElement)">
-                        <span class="nav-icon">❓</span>
-                        <span>Questions</span>
-                        <span class="dropdown-arrow">▼</span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="{{ url_for('add_question') }}" class="dropdown-item">
-                            <span>➕</span>
-                            <span>Add Question</span>
-                        </a>
-                        <a href="{{ url_for('view_questions') }}" class="dropdown-item">
-                            <span>👁️</span>
-                            <span>View Questions</span>
-                        </a>
-                        <a href="{{ url_for('edit_question') }}" class="dropdown-item">
-                            <span>✏️</span>
-                            <span>Edit Question</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ url_for('import_questions') }}" class="dropdown-item">
-                            <span>📥</span>
-                            <span>Import Questions</span>
-                        </a>
-                    </div>
-                </li>
-
-                <!-- Papers Dropdown -->
-                <li class="nav-item dropdown">
-                    <button class="dropdown-toggle" onclick="toggleDropdown(this.parentElement)">
-                        <span class="nav-icon">📄</span>
-                        <span>Papers</span>
-                        <span class="dropdown-arrow">▼</span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="{{ url_for('generate_paper') }}" class="dropdown-item">
-                            <span>🎯</span>
-                            <span>Generate Paper</span>
-                        </a>
-                        <a href="{{ url_for('saved_papers') }}" class="dropdown-item">
-                            <span>💾</span>
-                            <span>Saved Papers</span>
-                        </a>
-                        <a href="{{ url_for('paper_templates') }}" class="dropdown-item">
-                            <span>📋</span>
-                            <span>Templates</span>
-                        </a>
-                    </div>
-                </li>
-
-                <!-- Management Dropdown -->
-                <li class="nav-item dropdown">
-                    <button class="dropdown-toggle" onclick="toggleDropdown(this.parentElement)">
-                        <span class="nav-icon">⚙️</span>
-                        <span>Manage</span>
-                        <span class="dropdown-arrow">▼</span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <a href="{{ url_for('add_publication') }}" class="dropdown-item">
-                            <span>📚</span>
-                            <span>Publications</span>
-                        </a>
-                        <a href="{{ url_for('add_subject') }}" class="dropdown-item">
-                            <span>📖</span>
-                            <span>Subjects</span>
-                        </a>
-                        <a href="{{ url_for('add_class') }}" class="dropdown-item">
-                            <span>🎓</span>
-                            <span>Classes</span>
-                        </a>
-                        <a href="{{ url_for('add_chapter') }}" class="dropdown-item">
-                            <span>📑</span>
-                            <span>Chapters</span>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ url_for('settings') }}" class="dropdown-item">
-                            <span>🔧</span>
-                            <span>Settings</span>
-                        </a>
-                    </div>
-                </li>
-
-                <li class="nav-item">
-                    <a href="{{ url_for('help') }}" class="nav-link">
-                        <span class="nav-icon">💡</span>
-                        <span>Help</span>
+                    <a href="{{ url_for('add_info') }}" class="nav-link {% if request.endpoint == 'add_info' %}nav-link-active{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                        </svg>
+                        Add Publication
                     </a>
-                </li>
-            </ul>
+
+                    <a href="{{ url_for('add_question') }}" class="nav-link {% if request.endpoint == 'add_question' %}nav-link-active{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Add Question
+                    </a>
+
+                    <!-- Management Dropdown -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button @click="open = !open" class="nav-link flex items-center" :class="{ 'nav-link-active': open }">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Manage
+                            <svg class="w-4 h-4 ml-1 transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        
+                        <div x-show="open" 
+                             x-transition:enter="transition ease-out duration-200"
+                             x-transition:enter-start="opacity-0 scale-95"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             x-transition:leave="transition ease-in duration-150"
+                             x-transition:leave-start="opacity-100 scale-100"
+                             x-transition:leave-end="opacity-0 scale-95"
+                             class="absolute right-0 mt-2 w-64 rounded-lg bg-white shadow-lg border border-gray-200 py-2 z-50"
+                             style="display: none;"
+                             @click.outside="open = false">
+                            <div class="px-3 py-2 text-xs font-medium text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                                Management
+                            </div>
+                            <a href="{{ url_for('rename_page') }}" class="dropdown-item {% if request.endpoint == 'rename_page' %}dropdown-item-active{% endif %}">
+                                <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Rename Publication</div>
+                                    <div class="text-xs text-gray-500">Update publication details</div>
+                                </div>
+                            </a>
+                            <a href="{{ url_for('rename_question') }}" class="dropdown-item {% if request.endpoint == 'rename_question' %}dropdown-item-active{% endif %}">
+                                <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Edit Questions</div>
+                                    <div class="text-xs text-gray-500">Modify existing questions</div>
+                                </div>
+                            </a>
+                            <div class="border-t border-gray-100 my-2"></div>
+                            <div class="px-3 py-2 text-xs font-medium text-red-600 uppercase tracking-wide">
+                                Delete Operations
+                            </div>
+                            <a href="{{ url_for('delete_question') }}" class="dropdown-item {% if request.endpoint == 'delete_question' %}dropdown-item-active{% endif %}">
+                                <div class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Delete Questions</div>
+                                    <div class="text-xs text-gray-500">Remove specific questions</div>
+                                </div>
+                            </a>
+                            <a href="{{ url_for('delete_page') }}" class="dropdown-item {% if request.endpoint == 'delete_page' %}dropdown-item-active{% endif %}">
+                                <div class="w-8 h-8 rounded-lg bg-orange-50 flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Delete Publications</div>
+                                    <div class="text-xs text-gray-500">Remove publication data</div>
+                                </div>
+                            </a>
+                            <a href="{{ url_for('delete_question_type') }}" class="dropdown-item {% if request.endpoint == 'delete_question_type' %}dropdown-item-active{% endif %}">
+                                <div class="w-8 h-8 rounded-lg bg-purple-50 flex items-center justify-center mr-3">
+                                    <svg class="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-medium text-gray-900">Delete Question Types</div>
+                                    <div class="text-xs text-gray-500">Remove question categories</div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <a href="{{ url_for('view_questions') }}" class="nav-link {% if request.endpoint == 'view_questions' %}nav-link-active{% endif %}">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                        </svg>
+                        View Questions
+                    </a>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="lg:hidden">
+                    <button id="mobile-menu-button" class="p-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors duration-200">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="lg:hidden hidden border-t border-gray-100 bg-white">
+            <div class="px-2 pt-2 pb-3 space-y-1">
+                <a href="{{ url_for('index') }}" class="mobile-nav-item {% if request.endpoint == 'index' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
+                    </svg>
+                    Home
+                </a>
+                <a href="{{ url_for('add_info') }}" class="mobile-nav-item {% if request.endpoint == 'add_info' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    Add Publication
+                </a>
+                <a href="{{ url_for('add_question') }}" class="mobile-nav-item {% if request.endpoint == 'add_question' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Add Question
+                </a>
+                <a href="{{ url_for('rename_page') }}" class="mobile-nav-item {% if request.endpoint == 'rename_page' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                    </svg>
+                    Rename Publication
+                </a>
+                <a href="{{ url_for('rename_question') }}" class="mobile-nav-item {% if request.endpoint == 'rename_question' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                    </svg>
+                    Edit Question
+                </a>
+                <a href="{{ url_for('delete_question') }}" class="mobile-nav-item {% if request.endpoint == 'delete_question' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                    </svg>
+                    Delete Questions
+                </a>
+                <a href="{{ url_for('delete_page') }}" class="mobile-nav-item {% if request.endpoint == 'delete_page' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    Delete Publications
+                </a>
+                <a href="{{ url_for('delete_question_type') }}" class="mobile-nav-item {% if request.endpoint == 'delete_question_type' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                    </svg>
+                    Delete Question Type
+                </a>
+                <a href="{{ url_for('view_questions') }}" class="mobile-nav-item {% if request.endpoint == 'view_questions' %}mobile-nav-item-active{% endif %}">
+                    <svg class="w-4 h-4 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    View Questions
+                </a>
+            </div>
         </div>
     </nav>
 
-    <!-- Flash Messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="flash-message flash-{{ category }}">
-                        {% if category == 'success' %}
-                            <span>✅</span>
-                        {% elif category == 'error' %}
-                            <span>❌</span>
-                        {% else %}
-                            <span>ℹ️</span>
-                        {% endif %}
-                        <span>{{ message }}</span>
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-
     <!-- Main Content -->
-    <main class="main-content">
-        {% block content %}{% endblock %}
+    <main class="flex-1">
+        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+            {% block content %}{% endblock %}
+        </div>
     </main>
 
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <p>© 2024 Question Bank System. All rights reserved.</p>
-            <p class="mt-2">Made with ❤️ for Education</p>
+    <footer class="bg-gray-50 border-t border-gray-100 mt-auto">
+        <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+            <p class="text-center text-gray-500 text-sm">© 2025 Question Bank Management System</p>
         </div>
     </footer>
 
-    <script>
-        // Mobile menu toggle
-        function toggleMobileMenu() {
-            const menu = document.getElementById('navbar-menu');
-            const icon = document.getElementById('menu-icon');
-            
-            menu.classList.toggle('active');
-            icon.textContent = menu.classList.contains('active') ? '✕' : '☰';
+    <style>
+        /* Navigation Styles */
+        .nav-link {
+            @apply inline-flex items-center px-3 py-2 text-sm font-medium text-gray-600 rounded-lg transition-all duration-200 hover:text-primary-600 hover:bg-primary-50;
         }
 
-        // Dropdown toggle for mobile
-        function toggleDropdown(dropdown) {
-            // Only toggle on mobile
-            if (window.innerWidth <= 768) {
-                dropdown.classList.toggle('active');
-                
-                // Close other dropdowns
-                document.querySelectorAll('.dropdown').forEach(d => {
-                    if (d !== dropdown) {
-                        d.classList.remove('active');
+        .nav-link-active {
+            @apply bg-primary-50 text-primary-600 font-medium;
+        }
+
+        .dropdown-item {
+            @apply flex items-center px-3 py-2 text-sm transition-colors duration-200 hover:bg-gray-50;
+        }
+
+        .dropdown-item-active {
+            @apply bg-primary-50 text-primary-600;
+        }
+
+        .mobile-nav-item {
+            @apply flex items-center px-3 py-2 text-base font-medium text-gray-600 rounded-lg transition-colors duration-200 hover:bg-gray-50 hover:text-gray-900;
+        }
+
+        .mobile-nav-item-active {
+            @apply bg-primary-50 text-primary-600;
+        }
+
+        /* Smooth transitions */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 200ms;
+        }
+    </style>
+
+    <script>
+        // Mobile menu toggle with vanilla JS
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                    
+                    // Update button icon
+                    const icon = mobileMenuButton.querySelector('svg');
+                    if (icon) {
+                        if (mobileMenu.classList.contains('hidden')) {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                        } else {
+                            icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>';
+                        }
                     }
                 });
             }
-        }
 
-        // Close mobile menu when clicking outside
-        document.addEventListener('click', function(e) {
-            if (window.innerWidth <= 768) {
-                const navbar = document.querySelector('.navbar');
-                const menu = document.getElementById('navbar-menu');
-                const toggle = document.querySelector('.mobile-toggle');
-                
-                if (!navbar.contains(e.target) && menu.classList.contains('active')) {
-                    menu.classList.remove('active');
-                    document.getElementById('menu-icon').textContent = '☰';
-                }
-            }
-        });
-
-        // Auto-hide flash messages after 5 seconds
-        setTimeout(function() {
-            const flashMessages = document.querySelectorAll('.flash-message');
-            flashMessages.forEach(msg => {
-                msg.style.animation = 'slideUp 0.3s ease-out forwards';
-                setTimeout(() => msg.remove(), 300);
+            // Close mobile menu when clicking on a link
+            const mobileLinks = document.querySelectorAll('.mobile-nav-item');
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                    // Reset button icon
+                    const icon = mobileMenuButton.querySelector('svg');
+                    if (icon) {
+                        icon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>';
+                    }
+                });
             });
-        }, 5000);
-
-        // Add slide up animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideUp {
-                to {
-                    transform: translateY(-20px);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
+        });
     </script>
+
 </body>
+
 </html>
