@@ -3,69 +3,267 @@
 {% block title %}Rename Question{% endblock %}
 
 {% block content %}
+<div class="px-4 sm:px-0 max-w-4xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center mb-2">
+            <div class="p-3 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl shadow-lg mr-4">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                </svg>
+            </div>
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">Rename Question</h1>
+                <p class="text-gray-600 mt-1">Edit and update existing questions in your database</p>
+            </div>
+        </div>
+    </div>
 
-<h2>Rename Question</h2>
+    <!-- Main Form Card -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
+        <form method="POST" action="{{ url_for('rename_question') }}" class="p-8">
+            
+            <!-- Selection Section -->
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                    <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Find Question
+                </h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Publication -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">
+                            <svg class="w-4 h-4 inline mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 011 1l4 4v9a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Publication
+                        </label>
+                        <select name="publication" id="pub" onchange="loadSubjects()" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                        </select>
+                    </div>
 
-<form method="POST" action="{{ url_for('rename_question') }}">
+                    <!-- Subject -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">
+                            <svg class="w-4 h-4 inline mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                            </svg>
+                            Subject
+                        </label>
+                        <select name="subject" id="sub" onchange="loadClasses()" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                        </select>
+                    </div>
 
-  <label>Publication:</label>
-  <select name="publication" id="pub" onchange="loadSubjects()" required></select><br><br>
+                    <!-- Class -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">
+                            <svg class="w-4 h-4 inline mr-2 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            Class
+                        </label>
+                        <select name="class_name" id="cls" onchange="loadChapters()" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                        </select>
+                    </div>
 
-  <label>Subject:</label>
-  <select name="subject" id="sub" onchange="loadClasses()" required></select><br><br>
+                    <!-- Chapter -->
+                    <div class="space-y-2">
+                        <label class="block text-sm font-semibold text-gray-700">
+                            <svg class="w-4 h-4 inline mr-2 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            Chapter
+                        </label>
+                        <select name="chapter" id="chap" onchange="loadQtypes()" required 
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                        </select>
+                    </div>
+                </div>
 
-  <label>Class:</label>
-  <select name="class_name" id="cls" onchange="loadChapters()" required></select><br><br>
+                <!-- Question Type (Full Width) -->
+                <div class="mt-6 space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">
+                        <svg class="w-4 h-4 inline mr-2 text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                        </svg>
+                        Question Type
+                    </label>
+                    <select name="qtype" id="qtype" onchange="loadQuestions()" required 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                    </select>
+                </div>
 
-  <label>Chapter:</label>
-  <select name="chapter" id="chap" onchange="loadQtypes()" required></select><br><br>
+                <!-- Old Question Selection (Full Width) -->
+                <div class="mt-6 space-y-2">
+                    <label class="block text-sm font-semibold text-gray-700">
+                        <svg class="w-4 h-4 inline mr-2 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        Select Question to Edit
+                    </label>
+                    <select name="old_question" id="old_q" onchange="fillOldQuestion()" required 
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 bg-white shadow-sm hover:border-gray-400">
+                    </select>
+                </div>
+            </div>
 
-  <label>Question Type:</label>
-  <select name="qtype" id="qtype" onchange="loadQuestions()" required></select><br><br>
+            <!-- Dynamic Edit Fields -->
+            <div class="space-y-6">
+                
+                <!-- Fill in the Blanks, True/False, Answer, Manual Questions -->
+                <div id="field_fill_blank" style="display:none;" class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        Edit Question
+                    </h3>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Question (use ___ for blank)
+                        </label>
+                        <textarea name="question_fill_blank" id="question_fill_blank" rows="4" 
+                                  placeholder="Write question with blanks..."
+                                  class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 resize-y shadow-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Correct Answer
+                        </label>
+                        <input type="text" name="answer_fill_blank" id="answer_fill_blank" 
+                               placeholder="Enter correct answer"
+                               class="w-full px-4 py-3 border border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                    </div>
+                </div>
 
-  <label>Old Question:</label>
-  <select name="old_question" id="old_q" onchange="fillOldQuestion()" required></select><br><br>
+                <!-- Match the Following -->
+                <div id="field_match_following" style="display:none;" class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-200 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                        </svg>
+                        Edit Match Pair
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                Left Side (Column A)
+                            </label>
+                            <input type="text" name="match_left" id="match_left" 
+                                   placeholder="Enter left side item"
+                                   class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                Right Side (Column B)
+                            </label>
+                            <input type="text" name="match_right" id="match_right" 
+                                   placeholder="Enter right side item"
+                                   class="w-full px-4 py-3 border border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                        </div>
+                    </div>
+                </div>
 
-  <!-- Fields for Fill in the Blanks, True/False, Answer, Manual Questions -->
-  <div id="field_fill_blank" style="display:none; margin-bottom: 15px;">
-    <label>Question (use ___ for blank):</label><br>
-    <textarea name="question_fill_blank" id="question_fill_blank" rows="3" style="width: 100%;" placeholder="Write question with blanks"></textarea><br>
-    <label>Correct Answer:</label><br>
-    <input type="text" name="answer_fill_blank" id="answer_fill_blank" style="width: 100%;" placeholder="Correct answer">
-  </div>
+                <!-- Choose the Best Answer -->
+                <div id="field_choose_best_answer" style="display:none;" class="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-200 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                        </svg>
+                        Edit Multiple Choice Question
+                    </h3>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Question
+                        </label>
+                        <textarea name="question_mcq" id="question_mcq" rows="3" 
+                                  placeholder="Write question here..."
+                                  class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 resize-y shadow-sm"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">Options</label>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input type="text" name="option1" placeholder="Option A" 
+                                   class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                            <input type="text" name="option2" placeholder="Option B" 
+                                   class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                            <input type="text" name="option3" placeholder="Option C" 
+                                   class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                            <input type="text" name="option4" placeholder="Option D" 
+                                   class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-3">
+                            Correct Answer
+                        </label>
+                        <input type="text" name="answer_mcq" id="answer_mcq" 
+                               placeholder="Enter correct option"
+                               class="w-full px-4 py-3 border border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                    </div>
+                </div>
 
-  <!-- Match the Following -->
-  <div id="field_match_following" style="display:none; margin-bottom: 15px;">
-    <label>Left Side:</label><br>
-    <input type="text" name="match_left" id="match_left" style="width: 48%;" placeholder="Enter left side item">
-    <label style="margin-left: 10px;">Right Side:</label><br>
-    <input type="text" name="match_right" id="match_right" style="width: 48%;" placeholder="Enter right side item">
-  </div>
+                <!-- Full Form -->
+                <div id="field_full_form" style="display:none;" class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200 space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                        </svg>
+                        Edit Full Form
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                Abbreviation
+                            </label>
+                            <input type="text" name="abbr" id="abbr" 
+                                   placeholder="e.g., CPU"
+                                   class="w-full px-4 py-3 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                Full Form
+                            </label>
+                            <input type="text" name="full_form" id="full_form" 
+                                   placeholder="e.g., Central Processing Unit"
+                                   class="w-full px-4 py-3 border border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all duration-200 shadow-sm">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  <!-- Choose the Best Answer -->
-  <div id="field_choose_best_answer" style="display:none; margin-bottom: 15px;">
-    <label>Question:</label><br>
-    <textarea name="question_mcq" id="question_mcq" rows="3" style="width: 100%;" placeholder="Write question here"></textarea><br>
-    <label>Options:</label><br>
-    <input type="text" name="option1" placeholder="Option A" style="width: 23%; margin-right: 2%;">
-    <input type="text" name="option2" placeholder="Option B" style="width: 23%; margin-right: 2%;">
-    <input type="text" name="option3" placeholder="Option C" style="width: 23%; margin-right: 2%;">
-    <input type="text" name="option4" placeholder="Option D" style="width: 23%;"><br><br>
-    <label>Correct Answer:</label><br>
-    <input type="text" name="answer_mcq" id="answer_mcq" style="width: 100%;" placeholder="Correct option">
-  </div>
+            <!-- Submit Button -->
+            <div class="mt-8 flex gap-4">
+                <button type="submit" 
+                        class="flex-1 group relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-amber-600 to-orange-600 rounded-xl hover:from-amber-700 hover:to-orange-700 focus:outline-none focus:ring-4 focus:ring-amber-300 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl">
+                    <svg class="w-6 h-6 mr-2 group-hover:animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Update Question
+                    <div class="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 rounded-xl transition-opacity duration-200"></div>
+                </button>
+                
+                <a href="/" 
+                   class="inline-flex items-center justify-center px-6 py-4 text-lg font-medium text-gray-700 bg-white border-2 border-gray-300 rounded-xl hover:border-amber-500 hover:text-amber-600 hover:bg-amber-50 transition-all duration-200 shadow-sm hover:shadow-md">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
 
-  <!-- Full Form -->
-  <div id="field_full_form" style="display:none; margin-bottom: 15px;">
-    <label>Abbreviation:</label><br>
-    <input type="text" name="abbr" id="abbr" style="width: 48%;" placeholder="e.g., CPU">
-    <label style="margin-left: 10px;">Full Form:</label><br>
-    <input type="text" name="full_form" id="full_form" style="width: 48%;" placeholder="e.g., Central Processing Unit">
-  </div>
-
-  <button type="submit" style="padding: 8px 16px;">Rename Question</button>
-</form>
-
+<!-- JavaScript -->
 <script>
   const data = {{ data | tojson }};
 
@@ -195,16 +393,11 @@
 
     console.log("Editing question data:", qdata);
     
-    if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(type)){
-      // Check if qlist items are strings or objects
-      if(typeof qlist[0] === 'string'){
-        list = qlist.map((q,i) => ({ idx:i, display:q }));
-      } else {
-        list = qlist.map((q,i) => ({ idx:i, display:q.question }));
-      }
+    if(["Fill in the Blanks","True/False","Answer the Following","Manual Questions"].includes(qtype)){
       showField('field_fill_blank');
+      document.getElementById('question_fill_blank').value = qdata.question || '';
+      document.getElementById('answer_fill_blank').value = qdata.answer || '';
     }
-
     else if(qtype === "Match the Following"){
       showField('field_match_following');
       const key = Object.keys(qdata)[0];
@@ -231,5 +424,27 @@
   // Initialize publication select on page load
   fillSelect('pub', Object.keys(data));
 </script>
+
+<!-- Enhanced Styles -->
+<style>
+    input[type="text"]:focus,
+    textarea:focus,
+    select:focus {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+    }
+    
+    input[type="text"],
+    textarea,
+    select {
+        transition: all 0.2s ease;
+    }
+    
+    input[type="text"]::placeholder,
+    textarea::placeholder {
+        color: #9CA3AF;
+        opacity: 1;
+    }
+</style>
 
 {% endblock %}
