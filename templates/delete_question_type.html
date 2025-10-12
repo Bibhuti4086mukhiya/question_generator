@@ -1,50 +1,74 @@
 {% extends "base.html" %}
-
 {% block title %}Delete Questions{% endblock %}
 
 {% block content %}
+<div class="max-w-6xl mx-auto p-6 bg-white rounded-2xl shadow-md mt-8">
+  <h2 class="text-2xl font-semibold text-gray-800 mb-6 text-center">Delete Questions from Chapter</h2>
 
-<style>
+  <form method="POST" class="space-y-6">
+    <!-- Publication -->
+    <div>
+      <label for="pub" class="block text-sm font-medium text-gray-700 mb-2">Publication</label>
+      <select id="pub" name="publication"
+              class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onchange="loadSubjects()" required>
+        <option value="" disabled selected>-- Select --</option>
+      </select>
+    </div>
 
-  /* Add space between dropdowns */
-  select {
-    margin-bottom: 10px;
-  }
-</style>
-<h2>Delete Questions from Chapter</h2>
+    <!-- Subject -->
+    <div>
+      <label for="sub" class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+      <select id="sub" name="subject"
+              class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onchange="loadClasses()" required>
+        <option value="" disabled selected>-- Select --</option>
+      </select>
+    </div>
 
-<form method="POST">
-  <label>Publication:</label>
-  <select name="publication" id="pub" onchange="loadSubjects()" required>
-    <option value="" disabled selected>--Select--</option>
-  </select><br>
+    <!-- Class -->
+    <div>
+      <label for="cls" class="block text-sm font-medium text-gray-700 mb-2">Class</label>
+      <select id="cls" name="class_name"
+              class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onchange="loadChapters()" required>
+        <option value="" disabled selected>-- Select --</option>
+      </select>
+    </div>
 
-  <label>Subject:</label>
-  <select name="subject" id="sub" onchange="loadClasses()" required>
-    <option value="" disabled selected>--Select--</option>
-  </select><br>
+    <!-- Chapter -->
+    <div>
+      <label for="chap" class="block text-sm font-medium text-gray-700 mb-2">Chapter</label>
+      <select id="chap" name="chapter"
+              class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              onchange="loadQtypes()" required>
+        <option value="" disabled selected>-- Select --</option>
+      </select>
+    </div>
 
-  <label>Class:</label>
-  <select name="class_name" id="cls" onchange="loadChapters()" required>
-    <option value="" disabled selected>--Select--</option>
-  </select><br>
+    <!-- Question Type -->
+    <div>
+      <label for="qtype" class="block text-sm font-medium text-gray-700 mb-2">Question Type</label>
+      <select id="qtype" name="qtype"
+              class="w-full border border-gray-300 rounded-lg p-2.5 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              required>
+        <option value="" disabled selected>-- Select --</option>
+      </select>
+    </div>
 
-  <label>Chapter:</label>
-  <select name="chapter" id="chap" onchange="loadQtypes()" required>
-    <option value="" disabled selected>--Select--</option>
-  </select><br>
-
-  <label>Question Type:</label>
-  <select name="qtype" id="qtype" required>
-    <option value="" disabled selected>--Select--</option>
-  </select><br>
-
-  <br>
-  <button type="submit" onclick="return confirm('Are you sure you want to delete all questions of this type from this chapter?')">Delete Questions</button>
-</form>
+    <!-- Delete Button -->
+    <div class="pt-4 text-center">
+      <button type="submit"
+              onclick="return confirm('Are you sure you want to delete all questions of this type from this chapter?')"
+              class="px-6 py-2.5 bg-red-600 text-white font-semibold rounded-xl shadow hover:bg-red-700 transition duration-200">
+        Delete Questions
+      </button>
+    </div>
+  </form>
+</div>
 
 <script>
-  const data = {{ data | tojson }};
+  const data = {{ data | tojson | safe }};
 
   function loadSubjects(){
     const pub = document.getElementById("pub").value;
@@ -80,19 +104,18 @@
   }
 
   function fillSelect(id, arr){
-    let opt = '<option value="" disabled selected>--Select--</option>';
+    let opt = '<option value="" disabled selected>-- Select --</option>';
     arr.forEach(v => { opt += `<option value="${v}">${v}</option>`; });
     document.getElementById(id).innerHTML = opt;
   }
 
   function reset(ids){
     ids.forEach(id => {
-      document.getElementById(id).innerHTML = '<option value="" disabled selected>--Select--</option>';
+      document.getElementById(id).innerHTML = '<option value="" disabled selected>-- Select --</option>';
     });
   }
 
-  // Init publications dropdown
+  // Initialize Publications
   fillSelect("pub", Object.keys(data));
 </script>
-
 {% endblock %}
