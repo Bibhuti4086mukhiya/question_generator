@@ -9,7 +9,10 @@
   </h2>
 
   <form method="POST" class="space-y-5">
-    {% csrf_token %}
+    <!-- CSRF (if using Flask-WTF) -->
+    {% if form and form.csrf_token %}
+      {{ form.csrf_token }}
+    {% endif %}
 
     <!-- Publication -->
     <div>
@@ -79,63 +82,61 @@
   </form>
 </div>
 
-<!-- Safe JSON for Django -->
-{{ data|json_script:"jsonData" }}
-
+<!-- Flask JSON block -->
 <script>
-  const jsonData = JSON.parse(document.getElementById('jsonData').textContent);
+  const jsonData = {{ data | tojson | safe }};
 
   function loadSubjects(){
-      const pub = document.getElementById("publication").value;
-      const subjects = pub ? Object.keys(jsonData[pub]) : [];
+      let pub = document.getElementById("publication").value;
+      let subjects = pub ? Object.keys(jsonData[pub]) : [];
       let html = '<option value="" disabled selected>--Select Subject--</option>';
       subjects.forEach(s => html += `<option value="${s}">${s}</option>`);
       document.getElementById("subject").innerHTML = html;
   }
 
   function loadClasses(){
-      const pub = document.getElementById("publication").value;
-      const sub = document.getElementById("subject").value;
-      const classes = (pub && sub) ? Object.keys(jsonData[pub][sub]) : [];
+      let pub = document.getElementById("publication").value;
+      let sub = document.getElementById("subject").value;
+      let classes = (pub && sub) ? Object.keys(jsonData[pub][sub]) : [];
       let html = '<option value="" disabled selected>--Select Class--</option>';
       classes.forEach(c => html += `<option value="${c}">${c}</option>`);
       document.getElementById("class").innerHTML = html;
   }
 
   function loadChapters(){
-      const pub = document.getElementById("publication").value;
-      const sub = document.getElementById("subject").value;
-      const cls = document.getElementById("class").value;
-      const chapters = (pub && sub && cls) ? Object.keys(jsonData[pub][sub][cls]) : [];
+      let pub = document.getElementById("publication").value;
+      let sub = document.getElementById("subject").value;
+      let cls = document.getElementById("class").value;
+      let chapters = (pub && sub && cls) ? Object.keys(jsonData[pub][sub][cls]) : [];
       let html = '<option value="" disabled selected>--Select Chapter--</option>';
       chapters.forEach(ch => html += `<option value="${ch}">${ch}</option>`);
       document.getElementById("chapter").innerHTML = html;
   }
 
   function loadQtypes(){
-      const pub = document.getElementById("publication").value;
-      const sub = document.getElementById("subject").value;
-      const cls = document.getElementById("class").value;
-      const ch = document.getElementById("chapter").value;
-      const qtypes = (pub && sub && cls && ch) ? Object.keys(jsonData[pub][sub][cls][ch]) : [];
+      let pub = document.getElementById("publication").value;
+      let sub = document.getElementById("subject").value;
+      let cls = document.getElementById("class").value;
+      let ch = document.getElementById("chapter").value;
+      let qtypes = (pub && sub && cls && ch) ? Object.keys(jsonData[pub][sub][cls][ch]) : [];
       let html = '<option value="" disabled selected>--Select Question Type--</option>';
       qtypes.forEach(qt => html += `<option value="${qt}">${qt}</option>`);
       document.getElementById("qtype").innerHTML = html;
   }
 
   function loadQuestions(){
-      const pub = document.getElementById("publication").value;
-      const sub = document.getElementById("subject").value;
-      const cls = document.getElementById("class").value;
-      const ch = document.getElementById("chapter").value;
-      const qt = document.getElementById("qtype").value;
-      const questions = (pub && sub && cls && ch && qt) ? jsonData[pub][sub][cls][ch][qt] : [];
+      let pub = document.getElementById("publication").value;
+      let sub = document.getElementById("subject").value;
+      let cls = document.getElementById("class").value;
+      let ch = document.getElementById("chapter").value;
+      let qt = document.getElementById("qtype").value;
+      let questions = (pub && sub && cls && ch && qt) ? jsonData[pub][sub][cls][ch][qt] : [];
       let html = '<option value="" disabled selected>--Select Question--</option>';
 
       if(qt === "Match the Following"){
           questions.forEach(pair => {
-              const left = Object.keys(pair)[0];
-              const right = pair[left];
+              let left = Object.keys(pair)[0];
+              let right = pair[left];
               html += `<option value="${left}">${left} = ${right}</option>`;
           });
       }
