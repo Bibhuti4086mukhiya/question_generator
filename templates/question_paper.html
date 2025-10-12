@@ -1,12 +1,30 @@
-{% extends "base.html" %}
+<!-- Manual Questions -->
+            {% if questions["Manual Questions"] %}
+            {% set total_manual_marks = question_counts["Manual Questions"] * marks["Manual Questions"] %}
+            <div class="border-2 border-gray-300 p-6" data-section="manual-questions">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. 
+                        <span class="font-normal">[{{ question_counts["Manual Questions"] }} × {{ marks["Manual Questions"] }} = {{ total_manual_marks }} marks]</span>
+                    </h3>
+                    <button onclick="copySection('manual-questions')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
+                </div>
+                
+                <div class="leading-relaxed whitespace-pre-wrap">{% for q in questions["Manual Questions"] %}{{ q }}
+{% endfor %}</div>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}{% extends "base.html" %}
 {% block title %}Question Paper{% endblock %}
 {% block content %}
-<div class="px-4 sm:px-0">
+<div class="px-4 sm:px-0 max-w-5xl mx-auto">
     <!-- Header Section -->
-    <div class="mb-8">
-        <div class="flex items-center justify-between mb-2">
+    <div class="mb-6 no-print">
+        <div class="flex items-center justify-between mb-4">
             <div class="flex items-center">
-                <div class="p-3 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl shadow-lg mr-4">
+                <div class="p-3 bg-gray-800 rounded-lg shadow mr-4">
                     <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                     </svg>
@@ -16,76 +34,65 @@
                     <p class="text-gray-600 mt-1">Generated question paper ready for use</p>
                 </div>
             </div>
-            <button onclick="window.print()" class="hidden md:flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                </svg>
-                Print Paper
-            </button>
+            <div class="flex gap-3">
+                <button onclick="copyAllQuestions()" class="flex items-center px-5 py-3 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-200 shadow hover:shadow-lg">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    Copy All
+                </button>
+                <button onclick="window.print()" class="hidden md:flex items-center px-5 py-3 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 shadow-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Print
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- Paper Info Card -->
-    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mb-6">
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex items-center">
-                    <div class="p-3 bg-blue-100 rounded-lg mr-4">
-                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Subject</p>
-                        <p class="text-lg font-bold text-gray-900">{{ subject }}</p>
-                    </div>
+    <div class="bg-white border-2 border-gray-800 shadow-lg mb-8" style="font-family: 'Times New Roman', Times, serif;">
+        <!-- Header -->
+        <div class="border-b-2 border-gray-800 px-8 py-6 bg-gray-50">
+            <div class="text-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-900 uppercase tracking-wide">Question Paper</h2>
+            </div>
+            <div class="grid grid-cols-2 gap-8 text-base">
+                <div>
+                    <span class="font-bold">Subject:</span> <span class="ml-2">{{ subject }}</span>
                 </div>
-                <div class="flex items-center">
-                    <div class="p-3 bg-green-100 rounded-lg mr-4">
-                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="text-sm font-medium text-gray-600">Total Marks</p>
-                        <p class="text-lg font-bold text-gray-900">{{ total_marks }} Marks</p>
-                    </div>
+                <div class="text-right">
+                    <span class="font-bold">Total Marks:</span> <span class="ml-2">{{ total_marks }}</span>
                 </div>
             </div>
         </div>
 
         <!-- Question Sections -->
-        <div class="p-8 space-y-8">
+        <div class="p-8 space-y-8" id="question-paper-content">
             {% set qno = 1 %}
             
             <!-- Fill in the Blanks -->
             {% if questions["Fill in the Blanks"] %}
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+            <div class="border-2 border-gray-300 p-6" data-section="fill-blanks">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        Fill in the Blanks
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. Fill in the Blanks 
+                        <span class="font-normal">[{{ counts["Fill in the Blanks"] }} × {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["Fill in the Blanks"] }} × {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }} marks
-                    </span>
+                    <button onclick="copySection('fill-blanks')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <div class="bg-white rounded-lg p-4 mb-4 border border-blue-200">
-                    <p class="text-sm font-semibold text-gray-700 mb-2">Word Bank:</p>
-                    <div class="flex flex-wrap gap-2">
-                        {% for option in fill_options %}
-                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">{{ option }}</span>
-                        {% endfor %}
-                    </div>
+                <div class="mb-4 p-3 bg-gray-50 border border-gray-300">
+                    <p class="font-semibold mb-2">Word Bank:</p>
+                    <p>[{{ fill_options | join(', ') }}]</p>
                 </div>
                 
-                <ol class="space-y-3 list-none">
+                <ol class="space-y-2 ml-6">
                     {% for question in questions["Fill in the Blanks"] %}
-                    <li class="flex">
-                        <span class="text-blue-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
-                        <span class="text-gray-800">{{ question }}</span>
-                    </li>
+                    <li class="leading-relaxed">{{ question }}</li>
                     {% endfor %}
                 </ol>
             </div>
@@ -94,23 +101,20 @@
 
             <!-- True/False -->
             {% if questions["True/False"] %}
-            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+            <div class="border-2 border-gray-300 p-6" data-section="true-false">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        True/False
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. True/False 
+                        <span class="font-normal">[{{ counts["True/False"] }} × {{ marks["True/False"] }} = {{ counts["True/False"] * marks["True/False"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["True/False"] }} × {{ marks["True/False"] }} = {{ counts["True/False"] * marks["True/False"] }} marks
-                    </span>
+                    <button onclick="copySection('true-false')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <ol class="space-y-3 list-none">
+                <ol class="space-y-2 ml-6">
                     {% for q in questions["True/False"] %}
-                    <li class="flex">
-                        <span class="text-purple-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
-                        <span class="text-gray-800">{{ q }}</span>
-                    </li>
+                    <li class="leading-relaxed">{{ q }}</li>
                     {% endfor %}
                 </ol>
             </div>
@@ -119,76 +123,59 @@
 
             <!-- Match the Following -->
             {% if questions["Match the Following"] %}
-            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-100">
+            <div class="border-2 border-gray-300 p-6" data-section="match-following">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-amber-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        Match the Following
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. Match the Following 
+                        <span class="font-normal">[{{ counts["Match the Following"] }} × {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["Match the Following"] }} × {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }} marks
-                    </span>
+                    <button onclick="copySection('match-following')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <div class="bg-white rounded-lg overflow-hidden border border-amber-200">
-                    <table class="min-w-full divide-y divide-amber-200">
-                        <thead class="bg-amber-100">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-sm font-bold text-gray-900">Column A</th>
-                                <th class="px-6 py-3 text-left text-sm font-bold text-gray-900">Column B</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-amber-100">
-                            {% for left, right in questions["Match the Following"] %}
-                            <tr class="hover:bg-amber-50 transition-colors duration-150">
-                                <td class="px-6 py-4 text-gray-800">{{ left }}</td>
-                                <td class="px-6 py-4 text-gray-800">{{ right }}</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                <table class="w-full border-collapse border-2 border-gray-400">
+                    <thead>
+                        <tr class="bg-gray-100">
+                            <th class="border-2 border-gray-400 px-4 py-2 text-left font-bold">Column A</th>
+                            <th class="border-2 border-gray-400 px-4 py-2 text-left font-bold">Column B</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for left, right in questions["Match the Following"] %}
+                        <tr>
+                            <td class="border-2 border-gray-400 px-4 py-2">{{ left }}</td>
+                            <td class="border-2 border-gray-400 px-4 py-2">{{ right }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
             {% set qno = qno + 1 %}
             {% endif %}
 
             <!-- Choose the Best Answer -->
             {% if questions["Choose the Best Answer"] %}
-            <div class="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-100">
+            <div class="border-2 border-gray-300 p-6" data-section="choose-answer">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        Choose the Best Answer
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. Choose the Best Answer 
+                        <span class="font-normal">[{{ counts["Choose the Best Answer"] }} × {{ marks["Choose the Best Answer"] }} = {{ counts["Choose the Best Answer"] * marks["Choose the Best Answer"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["Choose the Best Answer"] }} × {{ marks["Choose the Best Answer"] }} = {{ counts["Choose the Best Answer"] * marks["Choose the Best Answer"] }} marks
-                    </span>
+                    <button onclick="copySection('choose-answer')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <ol class="space-y-4 list-none">
+                <ol class="space-y-4 ml-6">
                     {% for q in questions["Choose the Best Answer"] %}
-                    <li class="bg-white rounded-lg p-4 border border-green-200">
-                        <div class="flex mb-3">
-                            <span class="text-green-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
-                            <span class="text-gray-900 font-medium">{{ q.question }}</span>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-8">
-                            <div class="flex items-center">
-                                <span class="text-green-600 font-semibold mr-2">a.</span>
-                                <span class="text-gray-700">{{ q.options[0] }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="text-green-600 font-semibold mr-2">b.</span>
-                                <span class="text-gray-700">{{ q.options[1] }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="text-green-600 font-semibold mr-2">c.</span>
-                                <span class="text-gray-700">{{ q.options[2] }}</span>
-                            </div>
-                            <div class="flex items-center">
-                                <span class="text-green-600 font-semibold mr-2">d.</span>
-                                <span class="text-gray-700">{{ q.options[3] }}</span>
-                            </div>
+                    <li class="leading-relaxed">
+                        <div class="mb-2">{{ q.question }}</div>
+                        <div class="ml-4 space-y-1">
+                            <div>a. {{ q.options[0] }}</div>
+                            <div>b. {{ q.options[1] }}</div>
+                            <div>c. {{ q.options[2] }}</div>
+                            <div>d. {{ q.options[3] }}</div>
                         </div>
                     </li>
                     {% endfor %}
@@ -199,23 +186,20 @@
 
             <!-- Full Form -->
             {% if questions["Full Form"] %}
-            <div class="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6 border border-cyan-100">
+            <div class="border-2 border-gray-300 p-6" data-section="full-form">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-cyan-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        Full Form
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. Full Form 
+                        <span class="font-normal">[{{ counts["Full Form"] }} × {{ marks["Full Form"] }} = {{ counts["Full Form"] * marks["Full Form"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["Full Form"] }} × {{ marks["Full Form"] }} = {{ counts["Full Form"] * marks["Full Form"] }} marks
-                    </span>
+                    <button onclick="copySection('full-form')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <ol class="space-y-3 list-none">
+                <ol class="space-y-2 ml-6">
                     {% for abbr in questions["Full Form"] %}
-                    <li class="flex">
-                        <span class="text-cyan-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
-                        <span class="text-gray-800">{{ abbr }}</span>
-                    </li>
+                    <li class="leading-relaxed">{{ abbr }}</li>
                     {% endfor %}
                 </ol>
             </div>
@@ -246,23 +230,20 @@
 
             <!-- Answer the Following -->
             {% if questions["Answer the Following"] %}
-            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100">
+            <div class="border-2 border-gray-300 p-6" data-section="answer-following">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
-                        <span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
-                        Answer the Following
+                    <h3 class="text-lg font-bold text-gray-900">
+                        {{ qno }}. Answer the Following 
+                        <span class="font-normal">[{{ counts["Answer the Following"] }} × {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }} marks]</span>
                     </h3>
-                    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold">
-                        {{ counts["Answer the Following"] }} × {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }} marks
-                    </span>
+                    <button onclick="copySection('answer-following')" class="no-print px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 text-gray-700 rounded transition-colors">
+                        Copy
+                    </button>
                 </div>
                 
-                <ol class="space-y-3 list-none">
+                <ol class="space-y-2 ml-6">
                     {% for q in questions["Answer the Following"] %}
-                    <li class="flex">
-                        <span class="text-indigo-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
-                        <span class="text-gray-800">{{ q }}</span>
-                    </li>
+                    <li class="leading-relaxed">{{ q }}</li>
                     {% endfor %}
                 </ol>
             </div>
@@ -272,14 +253,14 @@
     </div>
 
     <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 mb-8">
-        <button onclick="window.print()" class="flex-1 sm:hidden inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+    <div class="flex flex-col sm:flex-row gap-4 mb-8 no-print">
+        <button onclick="window.print()" class="flex-1 md:hidden inline-flex items-center justify-center px-6 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-900 transition-all duration-200 shadow hover:shadow-lg">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
             </svg>
             Print Paper
         </button>
-        <a href="/generate" class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md">
+        <a href="/generate" class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-lg hover:border-gray-400 hover:bg-gray-50 transition-all duration-200 shadow-sm">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
             </svg>
@@ -288,27 +269,88 @@
     </div>
 </div>
 
+<!-- Toast Notification -->
+<div id="toast" class="no-print fixed top-4 right-4 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-50">
+    <div class="flex items-center">
+        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        <span id="toast-message">Copied to clipboard!</span>
+    </div>
+</div>
+
+<!-- JavaScript for Copy Functionality -->
+<script>
+    function showToast(message) {
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toast-message');
+        toastMessage.textContent = message;
+        toast.style.transform = 'translateX(0)';
+        
+        setTimeout(() => {
+            toast.style.transform = 'translateX(150%)';
+        }, 2000);
+    }
+
+    function copyAllQuestions() {
+        const content = document.getElementById('question-paper-content');
+        const clonedContent = content.cloneNode(true);
+        
+        // Remove all copy buttons from cloned content
+        const buttons = clonedContent.querySelectorAll('button');
+        buttons.forEach(btn => btn.remove());
+        
+        const text = clonedContent.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('All questions copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            showToast('Failed to copy');
+        });
+    }
+
+    function copySection(sectionId) {
+        const section = document.querySelector(`[data-section="${sectionId}"]`);
+        const clonedSection = section.cloneNode(true);
+        
+        // Remove the copy button from cloned content
+        const button = clonedSection.querySelector('button');
+        if (button) button.remove();
+        
+        const text = clonedSection.innerText;
+        
+        navigator.clipboard.writeText(text).then(() => {
+            showToast('Section copied to clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy:', err);
+            showToast('Failed to copy');
+        });
+    }
+</script>
+
 <!-- Print Styles -->
 <style>
+    body {
+        font-family: 'Times New Roman', Times, serif;
+    }
+    
     @media print {
         body {
             background: white;
         }
-        .bg-gradient-to-r,
-        .bg-gradient-to-br {
-            background: white !important;
-        }
-        button,
-        .shadow-xl,
-        .shadow-lg {
+        .no-print {
             display: none !important;
         }
-        .border {
+        .border-2 {
+            border-width: 2px;
             border-color: #000 !important;
         }
-        .rounded-xl,
-        .rounded-2xl {
-            border-radius: 8px !important;
+        .bg-gray-50 {
+            background: #f9f9f9 !important;
+        }
+        @page {
+            margin: 1cm;
         }
     }
 </style>
