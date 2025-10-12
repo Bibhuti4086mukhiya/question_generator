@@ -1,110 +1,315 @@
 {% extends "base.html" %}
-
-{% block title %}Add Question{% endblock %}
-
+{% block title %}Question Paper{% endblock %}
 {% block content %}
+<div class="px-4 sm:px-0">
+    <!-- Header Section -->
+    <div class="mb-8">
+        <div class="flex items-center justify-between mb-2">
+            <div class="flex items-center">
+                <div class="p-3 bg-gradient-to-br from-green-500 to-teal-600 rounded-xl shadow-lg mr-4">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-3xl font-bold text-gray-900">Question Paper</h1>
+                    <p class="text-gray-600 mt-1">Generated question paper ready for use</p>
+                </div>
+            </div>
+            <button onclick="window.print()" class="hidden md:flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                </svg>
+                Print Paper
+            </button>
+        </div>
+    </div>
 
+    <!-- Paper Info Card -->
+    <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden mb-6">
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 px-8 py-6 border-b border-gray-200">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex items-center">
+                    <div class="p-3 bg-blue-100 rounded-lg mr-4">
+                        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Subject</p>
+                        <p class="text-lg font-bold text-gray-900">{{ subject }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <div class="p-3 bg-green-100 rounded-lg mr-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm font-medium text-gray-600">Total Marks</p>
+                        <p class="text-lg font-bold text-gray-900">{{ total_marks }} Marks</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <h2>Question Paper</h2>
-    <p><strong>Subject:</strong> {{ subject }}</p>
-    <p><strong>Total Marks:</strong> {{ total_marks }}</p>
+        <!-- Question Sections -->
+        <div class="p-8 space-y-8">
+            {% set qno = 1 %}
+            
+            <!-- Fill in the Blanks -->
+            {% if questions["Fill in the Blanks"] %}
+            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Fill in the Blanks
+                    </h3>
+                    <span class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["Fill in the Blanks"] }} × {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }} marks
+                    </span>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 mb-4 border border-blue-200">
+                    <p class="text-sm font-semibold text-gray-700 mb-2">Word Bank:</p>
+                    <div class="flex flex-wrap gap-2">
+                        {% for option in fill_options %}
+                        <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm font-medium">{{ option }}</span>
+                        {% endfor %}
+                    </div>
+                </div>
+                
+                <ol class="space-y-3 list-none">
+                    {% for question in questions["Fill in the Blanks"] %}
+                    <li class="flex">
+                        <span class="text-blue-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
+                        <span class="text-gray-800">{{ question }}</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-    {% set qno = 1 %}
+            <!-- True/False -->
+            {% if questions["True/False"] %}
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-purple-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        True/False
+                    </h3>
+                    <span class="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["True/False"] }} × {{ marks["True/False"] }} = {{ counts["True/False"] * marks["True/False"] }} marks
+                    </span>
+                </div>
+                
+                <ol class="space-y-3 list-none">
+                    {% for q in questions["True/False"] %}
+                    <li class="flex">
+                        <span class="text-purple-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
+                        <span class="text-gray-800">{{ q }}</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-    {% if questions["Fill in the Blanks"] %}
-      <div class="section">
-        <h3>{{ qno }}. Fill in the Blanks [{{ counts["Fill in the Blanks"] }} x {{ marks["Fill in the Blanks"] }} = {{ counts["Fill in the Blanks"] * marks["Fill in the Blanks"] }}]</h3>
+            <!-- Match the Following -->
+            {% if questions["Match the Following"] %}
+            <div class="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-6 border border-amber-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-amber-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Match the Following
+                    </h3>
+                    <span class="px-4 py-2 bg-amber-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["Match the Following"] }} × {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }} marks
+                    </span>
+                </div>
+                
+                <div class="bg-white rounded-lg overflow-hidden border border-amber-200">
+                    <table class="min-w-full divide-y divide-amber-200">
+                        <thead class="bg-amber-100">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-sm font-bold text-gray-900">Column A</th>
+                                <th class="px-6 py-3 text-left text-sm font-bold text-gray-900">Column B</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-amber-100">
+                            {% for left, right in questions["Match the Following"] %}
+                            <tr class="hover:bg-amber-50 transition-colors duration-150">
+                                <td class="px-6 py-4 text-gray-800">{{ left }}</td>
+                                <td class="px-6 py-4 text-gray-800">{{ right }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-        <p class="options">[{{ fill_options | join(', ') }}]</p>
+            <!-- Choose the Best Answer -->
+            {% if questions["Choose the Best Answer"] %}
+            <div class="bg-gradient-to-r from-green-50 to-teal-50 rounded-xl p-6 border border-green-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Choose the Best Answer
+                    </h3>
+                    <span class="px-4 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["Choose the Best Answer"] }} × {{ marks["Choose the Best Answer"] }} = {{ counts["Choose the Best Answer"] * marks["Choose the Best Answer"] }} marks
+                    </span>
+                </div>
+                
+                <ol class="space-y-4 list-none">
+                    {% for q in questions["Choose the Best Answer"] %}
+                    <li class="bg-white rounded-lg p-4 border border-green-200">
+                        <div class="flex mb-3">
+                            <span class="text-green-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
+                            <span class="text-gray-900 font-medium">{{ q.question }}</span>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 ml-8">
+                            <div class="flex items-center">
+                                <span class="text-green-600 font-semibold mr-2">a.</span>
+                                <span class="text-gray-700">{{ q.options[0] }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-green-600 font-semibold mr-2">b.</span>
+                                <span class="text-gray-700">{{ q.options[1] }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-green-600 font-semibold mr-2">c.</span>
+                                <span class="text-gray-700">{{ q.options[2] }}</span>
+                            </div>
+                            <div class="flex items-center">
+                                <span class="text-green-600 font-semibold mr-2">d.</span>
+                                <span class="text-gray-700">{{ q.options[3] }}</span>
+                            </div>
+                        </div>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-        <ol>
-          {% for question in questions["Fill in the Blanks"] %}
-            <li>{{ question }}</li>
-          {% endfor %}
-        </ol>
-      </div>
-      {% set qno = qno + 1 %}
-    {% endif %}
+            <!-- Full Form -->
+            {% if questions["Full Form"] %}
+            <div class="bg-gradient-to-r from-cyan-50 to-blue-50 rounded-xl p-6 border border-cyan-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-cyan-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Full Form
+                    </h3>
+                    <span class="px-4 py-2 bg-cyan-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["Full Form"] }} × {{ marks["Full Form"] }} = {{ counts["Full Form"] * marks["Full Form"] }} marks
+                    </span>
+                </div>
+                
+                <ol class="space-y-3 list-none">
+                    {% for abbr in questions["Full Form"] %}
+                    <li class="flex">
+                        <span class="text-cyan-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
+                        <span class="text-gray-800">{{ abbr }}</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-    {% if questions["True/False"] %}
-    <h3>{{ qno }}. True/False [{{ counts["True/False"] }} x {{ marks["True/False"] }} = {{ counts["True/False"] * marks["True/False"] }}]</h3>
-    <ol>
-        {% for q in questions["True/False"] %}
-        <li>{{ q }}</li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
-    {% endif %}
+            <!-- Manual Questions -->
+            {% if questions["Manual Questions"] %}
+            {% set total_manual_marks = question_counts["Manual Questions"] * marks["Manual Questions"] %}
+            <div class="bg-gradient-to-r from-rose-50 to-pink-50 rounded-xl p-6 border border-rose-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-rose-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Additional Questions
+                    </h3>
+                    <span class="px-4 py-2 bg-rose-600 text-white rounded-lg text-sm font-semibold">
+                        {{ question_counts["Manual Questions"] }} × {{ marks["Manual Questions"] }} = {{ total_manual_marks }} marks
+                    </span>
+                </div>
+                
+                <div class="bg-white rounded-lg p-4 border border-rose-200">
+                    <pre class="whitespace-pre-wrap font-sans text-gray-800 leading-relaxed">{% for q in questions["Manual Questions"] %}{{ q }}
+{% endfor %}</pre>
+                </div>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
 
-    {% if questions["Match the Following"] %}
-    <h3>{{ qno }}. Match the Following [{{ counts["Match the Following"] }} x {{ marks["Match the Following"] }} = {{ counts["Match the Following"] * marks["Match the Following"] }}]</h3>
-    <table  cellpadding="5" cellspacing="0">
-      <thead>
-        <tr>
-          <th>Column A</th>
-          <th>Column B</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for left, right in questions["Match the Following"] %}
-        <tr>
-          <td>{{ left }}</td>
-          <td>{{ right }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% set qno = qno + 1 %}
-    {% endif %}
+            <!-- Answer the Following -->
+            {% if questions["Answer the Following"] %}
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 rounded-xl p-6 border border-indigo-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-xl font-bold text-gray-900 flex items-center">
+                        <span class="w-8 h-8 bg-indigo-600 text-white rounded-lg flex items-center justify-center mr-3 text-sm">{{ qno }}</span>
+                        Answer the Following
+                    </h3>
+                    <span class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold">
+                        {{ counts["Answer the Following"] }} × {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }} marks
+                    </span>
+                </div>
+                
+                <ol class="space-y-3 list-none">
+                    {% for q in questions["Answer the Following"] %}
+                    <li class="flex">
+                        <span class="text-indigo-600 font-semibold mr-3 min-w-[2rem]">{{ loop.index }}.</span>
+                        <span class="text-gray-800">{{ q }}</span>
+                    </li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% set qno = qno + 1 %}
+            {% endif %}
+        </div>
+    </div>
 
-    {% if questions["Choose the Best Answer"] %}
-    <h3>{{ qno }}. Choose the Best Answer [{{ counts["Choose the Best Answer"] }} x {{ marks["Choose the Best Answer"] }} = {{ counts["Choose the Best Answer"] * marks["Choose the Best Answer"] }}]</h3>
-    <ol>
-        {% for q in questions["Choose the Best Answer"] %}
-        <li>{{ q.question }}<br>
-            a. {{ q.options[0] }}&nbsp;&nbsp;
-            b. {{ q.options[1] }}&nbsp;&nbsp;
-            c. {{ q.options[2] }}&nbsp;&nbsp;
-            d. {{ q.options[3] }}
-        </li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
-    {% endif %}
+    <!-- Action Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 mb-8">
+        <button onclick="window.print()" class="flex-1 sm:hidden inline-flex items-center justify-center px-6 py-4 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+            </svg>
+            Print Paper
+        </button>
+        <a href="/generate" class="flex-1 inline-flex items-center justify-center px-6 py-4 bg-white border-2 border-gray-300 text-gray-700 rounded-xl hover:border-blue-500 hover:text-blue-600 hover:bg-blue-50 transition-all duration-200 shadow-sm hover:shadow-md">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Generate New Paper
+        </a>
+    </div>
+</div>
 
-    {% if questions["Full Form"] %}
-    <h3>{{ qno }}. Full Form [{{ counts["Full Form"] }} x {{ marks["Full Form"] }} = {{ counts["Full Form"] * marks["Full Form"] }}]</h3>
-    <ol>
-        {% for abbr in questions["Full Form"] %}
-        <li>{{ abbr }}</li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
-    {% endif %}
-
-    {% if questions["Manual Questions"] %}
-      {% set total_manual_marks = question_counts["Manual Questions"] * marks["Manual Questions"] %}
-      <h3>
-        {{ qno }}. [{{ question_counts["Manual Questions"] }} x {{ marks["Manual Questions"] }} = {{ total_manual_marks }}]
-      </h3>
-      <pre style="font-family:inherit; white-space: pre-wrap;">
-    {% for q in questions["Manual Questions"] %}
-    {{ q }}
-    {% endfor %}
-      </pre>
-      {% set qno = qno + 1 %}
-    {% endif %}
-
-
-
-
-    {% if questions["Answer the Following"] %}
-    <h3>{{ qno }}. Answer the Following [{{ counts["Answer the Following"] }} x {{ marks["Answer the Following"] }} = {{ counts["Answer the Following"] * marks["Answer the Following"] }}]</h3>
-    <ol>
-        {% for q in questions["Answer the Following"] %}
-        <li>{{ q }}</li>
-        {% endfor %}
-    </ol>
-    {% set qno = qno + 1 %}
-    {% endif %}
+<!-- Print Styles -->
+<style>
+    @media print {
+        body {
+            background: white;
+        }
+        .bg-gradient-to-r,
+        .bg-gradient-to-br {
+            background: white !important;
+        }
+        button,
+        .shadow-xl,
+        .shadow-lg {
+            display: none !important;
+        }
+        .border {
+            border-color: #000 !important;
+        }
+        .rounded-xl,
+        .rounded-2xl {
+            border-radius: 8px !important;
+        }
+    }
+</style>
 {% endblock %}
