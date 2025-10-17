@@ -168,26 +168,6 @@
                             "answer": "are"
                         }
                     ]
-                },
-                "chapter 1": {
-                    "Fill in the Blanks": [
-                        "The physical parts of a computer are called __________.",
-                        "__________ is the part of the computer that carries out instructions.",
-                        "The device used to type text into a computer is called a __________.",
-                        "The screen where results are displayed is called a __________.",
-                        {
-                            "question": "who am ....?sdfgbrfbhrtg",
-                            "answer": "i"
-                        },
-                        {
-                            "question": "hhahahha",
-                            "answer": "ha"
-                        },
-                        {
-                            "question": "wowosdrfgbfdbgvrfvbrfg",
-                            "answer": "ookdsfgvevef"
-                        }
-                    ]
                 }
             }
         }
@@ -375,9 +355,9 @@
                 "Chapter 3": {
                     "Fill in the Blanks": [
                         "The earth orbits the ___.",
-                        "The moon shines by ____ the sunÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s light.",
+                        "The moon shines by ____ the sun\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s light.",
                         "Stars are big balls of ____.",
-                        "Day and night happen because of the earthÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s ___.",
+                        "Day and night happen because of the earth\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s ___.",
                         "Gravity pulls things ___."
                     ],
                     "True/False": [
@@ -521,7 +501,7 @@
                     ],
                     "True/False": [
                         "Software is a program. (True)",
-                        "CPU is the computerÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢s brain. (True)",
+                        "CPU is the computer\u00c3\u0192\u00c6\u2019\u00c3\u2020\u00e2\u20ac\u2122\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00a1\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00ac\u00c3\u0192\u00c6\u2019\u00c3\u201a\u00c2\u00a2\u00c3\u0192\u00c2\u00a2\u00c3\u00a2\u00e2\u20ac\u0161\u00c2\u00ac\u00c3\u2026\u00c2\u00be\u00c3\u0192\u00e2\u20ac\u0161\u00c3\u201a\u00c2\u00a2s brain. (True)",
                         "Printers scan documents. (False)",
                         "Scanners copy images. (True)",
                         "Computers are slow machines. (False)"
@@ -700,7 +680,10 @@
                         "The keyboard is used to ___ data.",
                         "A mouse helps to ___ on the screen.",
                         "The monitor shows ___.",
-                        "Computers use ___ to store information."
+                        {
+                            "question": "bipin____",
+                            "answer": "ok"
+                        }
                     ],
                     "True/False": [
                         "A computer can do calculations. (True)",
@@ -753,5 +736,67 @@
             }
         }
     },
-    "saraswati school": {}
+    "saraswati school": {
+        "s": {
+            "3": {
+                "chapter 1": {
+                    "True/False": [
+                        {
+                            "question": "oooooooo",
+                            "answer": "oooooooo"
+                        },
+                        {
+                            "question": "Bibhuti is a coder.",
+                            "answer": "true"
+                        },
+                        {
+                            "question": "mouse is input device",
+                            "answer": "True"
+                        },
+                        {
+                            "question": "mouse is input device",
+                            "answer": "True"
+                        },
+                        {
+                            "question": "mouse is an output device.",
+                            "answer": "False"
+                        }
+                    ],
+                    "Fill in the Blanks": [
+                        {
+                            "question": "srghsrt",
+                            "answer": "fghbf"
+                        },
+                        {
+                            "question": "ghjmnhg",
+                            "answer": "ghj"
+                        }
+                    ],
+                    "Match the Following": [
+                        {
+                            "factory": "monitor"
+                        },
+                        {
+                            "computer": "electronic device"
+                        },
+                        {
+                            "tv": "television"
+                        }
+                    ],
+                    "Choose the Best Answer": [
+                        {
+                            "question": "fggggg",
+                            "options": [
+                                "lsdfk",
+                                "sah",
+                                "mukhiya",
+                                "were"
+                            ],
+                            "answer": "ertger"
+                        }
+                    ]
+                }
+            }
+        }
+    }
 }

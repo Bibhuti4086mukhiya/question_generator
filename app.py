@@ -196,209 +196,418 @@ def save_question():
 # Generate question paper dynamically
 @app.route('/generate', methods=['POST'])
 def generate_question_paper():
-    data = load_data()
+    try:
+        data = load_data()
 
-    pub = request.form.get('publication')
-    sub = request.form.get('subject')
-    cls = request.form.get('class')
-    chapters = request.form.getlist('chapters')
+        # Step 1: Get form data with validation
+        pub = request.form.get('publication', '').strip()
+        sub = request.form.get('subject', '').strip()
+        cls = request.form.get('class', '').strip()
+        chapters = request.form.getlist('chapters')
+        
+        # Validate required fields
+        if not all([pub, sub, cls, chapters]):
+            # flash('Please fill all required fields: Publication, Subject, Class, and at least one Chapter', 'error')
+            return redirect(request.referrer or url_for('index'))
 
-    # Step 1: Collect all categories from selected chapters
-    all_categories = set()
-    for chapter in chapters:
-        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
-        for qtype in chapter_data.keys():
-            all_categories.add(qtype)
-
-    # Always include Manual Questions
-    all_categories.add("Manual Questions")
-
-    # Step 2: Build question_counts and marks dictionaries dynamically
-    question_counts = {}
-    marks = {}
-    formatted_questions = {}
-
-    for qtype in all_categories:
-        # convert category name to safe form key
-        key = qtype.lower().replace(" ", "_")
-        question_counts[qtype] = int(request.form.get(f"{key}_count", 0))
-        marks[qtype] = int(request.form.get(f"{key}_mark", 0))
-        formatted_questions[qtype] = []
-
-    # Step 3: Handle manual questions separately
-    # Manual Questions
-    manual_questions = request.form.get('manual_questions', '').split('\n')
-    manual_questions = [q.strip() for q in manual_questions if q.strip()]
-
-    manual_mark = int(request.form.get('manual_mark', 0))
-
-    formatted_questions["Manual Questions"] = manual_questions
-    marks["Manual Questions"] = manual_mark
-    question_counts["Manual Questions"] = len(manual_questions)   # ✅ number of lines in textarea
-
-    # Step 4: Collect questions from chapters
-    for chapter in chapters:
-        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
-        for qtype in all_categories:
-            if qtype in ["Match the Following"]:
-                continue
-            formatted_questions[qtype].extend(chapter_data.get(qtype, []))
-
-    # Step 5: Random sample for normal categories
-    for qtype in formatted_questions:
-        if qtype in ["Match the Following"]:
-            continue
-        all_q = formatted_questions[qtype]
-        count = question_counts.get(qtype, 0)
-        formatted_questions[qtype] = random.sample(all_q, min(count, len(all_q))) if all_q else []
-
-    # Step 6: Special handling for Match the Following
-    if "Match the Following" in all_categories:
-        match_pairs = []
+        # Step 2: Collect all categories from selected chapters
+        all_categories = set()
+        valid_chapters = []
+        
         for chapter in chapters:
-            items = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {}).get("Match the Following", [])
-            for pair in items:
-                for k, v in pair.items():
-                    match_pairs.append((k.strip(), v.strip()))
+            chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+            if chapter_data:  # Only include chapters that exist in data
+                valid_chapters.append(chapter)
+                for qtype in chapter_data.keys():
+                    all_categories.add(qtype)
+            else:
+                print(f"Warning: Chapter '{chapter}' not found in data for {pub}/{sub}/{cls}")
 
-        selected_match = random.sample(match_pairs, min(question_counts["Match the Following"], len(match_pairs))) if match_pairs else []
-        left = [k for k, v in selected_match]
-        right = [v for k, v in selected_match]
-        random.shuffle(right)
-        formatted_questions["Match the Following"] = list(zip(left, right))
+        if not valid_chapters:
+            # flash('No valid chapters found for the selected criteria', 'error')
+            return redirect(request.referrer or url_for('index'))
+
+        # Always include Manual Questions
+        all_categories.add("Manual Questions")
+
+        # Step 3: Build question_counts and marks dictionaries dynamically
+        question_counts = {}
+        marks = {}
+        formatted_questions = {}
+
+        for qtype in all_categories:
+            # Convert category name to safe form key
+            key = qtype.lower().replace(" ", "_")
+            question_counts[qtype] = int(request.form.get(f"{key}_count", 0))
+            marks[qtype] = int(request.form.get(f"{key}_mark", 0))
+            formatted_questions[qtype] = []
+
+        # Step 4: Handle manual questions
+        manual_text = request.form.get('manual_questions', '').strip()
+        manual_mark = int(request.form.get('manual_mark', 0))
+        manual_format = request.form.get('manual_output_format', 'original')
+
+        if manual_text:
+            manual_lines = [line.strip().replace('\r', '') for line in manual_text.split('\n') if line.strip()]
+            
+            if manual_format == 'numbered':
+                formatted_questions["Manual Questions"] = [f"{i+1}. {line}" for i, line in enumerate(manual_lines)]
+                question_counts["Manual Questions"] = len(manual_lines)
+            else:
+                formatted_questions["Manual Questions"] = manual_lines
+                question_counts["Manual Questions"] = 1
+            
+            marks["Manual Questions"] = manual_mark
+        else:
+            # Remove Manual Questions if no content
+            all_categories.discard("Manual Questions")
+            question_counts.pop("Manual Questions", None)
+            marks.pop("Manual Questions", None)
+            formatted_questions.pop("Manual Questions", None)
+
+        # Step 5: Collect questions from valid chapters with proper formatting
+        chapter_questions = {}
+        for qtype in all_categories:
+            if qtype in ["Match the Following", "Manual Questions"]:
+                continue
+                
+            chapter_questions[qtype] = []
+            
+            for chapter in valid_chapters:
+                chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+                questions = chapter_data.get(qtype, [])
+                
+                for question in questions:
+                    if qtype == "Choose the Best Answer":
+                        # Handle MCQ questions - ensure they have proper structure
+                        if isinstance(question, dict) and 'question' in question:
+                            # Valid MCQ format
+                            chapter_questions[qtype].append({
+                                'question': question['question'],
+                                'options': question.get('options', ['Option A', 'Option B', 'Option C', 'Option D'])
+                            })
+                        elif isinstance(question, str):
+                            # Convert string to valid MCQ format
+                            chapter_questions[qtype].append({
+                                'question': question,
+                                'options': ['Option A', 'Option B', 'Option C', 'Option D']
+                            })
+                        else:
+                            # Invalid format, skip
+                            continue
+                    else:
+                        # Handle other question types
+                        if isinstance(question, dict) and 'question' in question:
+                            chapter_questions[qtype].append(question['question'])
+                        elif isinstance(question, str):
+                            chapter_questions[qtype].append(question)
+
+        # Step 6: Random sample for normal categories
+        for qtype in all_categories:
+            if qtype in ["Match the Following", "Manual Questions"]:
+                continue
+                
+            all_available = chapter_questions.get(qtype, [])
+            count_needed = question_counts.get(qtype, 0)
+            
+            if all_available and count_needed > 0:
+                selected = random.sample(all_available, min(count_needed, len(all_available)))
+                formatted_questions[qtype] = selected
+            else:
+                formatted_questions[qtype] = []
+
+        # Step 7: Special handling for Match the Following
+        if "Match the Following" in all_categories:
+            match_pairs = []
+            
+            for chapter in valid_chapters:
+                items = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {}).get("Match the Following", [])
+                for pair in items:
+                    if isinstance(pair, dict):
+                        for k, v in pair.items():
+                            match_pairs.append((k.strip(), v.strip()))
+                    elif isinstance(pair, (list, tuple)) and len(pair) == 2:
+                        match_pairs.append((pair[0].strip(), pair[1].strip()))
+
+            count_needed = question_counts.get("Match the Following", 0)
+            if match_pairs and count_needed > 0:
+                selected_match = random.sample(match_pairs, min(count_needed, len(match_pairs)))
+                left = [k for k, v in selected_match]
+                right = [v for k, v in selected_match]
+                random.shuffle(right)
+                formatted_questions["Match the Following"] = list(zip(left, right))
+            else:
+                formatted_questions["Match the Following"] = []
+
+        # Step 8: Handle Fill in the Blanks with word bank
+        if "Fill in the Blanks" in all_categories:
+            fib_all_questions = []
+            fib_all_answers = []
+
+            for chapter in valid_chapters:
+                chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
+                fib_raw = chapter_data.get("Fill in the Blanks", [])
+
+                for item in fib_raw:
+                    if isinstance(item, dict) and 'question' in item:
+                        fib_all_questions.append(item['question'])
+                        fib_all_answers.append(item.get('answer', ''))
+                    elif isinstance(item, str):
+                        fib_all_questions.append(item)
+                        fib_all_answers.append("")
+
+            fib_count = question_counts.get("Fill in the Blanks", 0)
+            
+            if fib_all_questions and fib_count > 0:
+                selected_indices = random.sample(range(len(fib_all_questions)), min(fib_count, len(fib_all_questions)))
+                fill_questions = [fib_all_questions[i] for i in selected_indices]
+                selected_answers = [fib_all_answers[i] for i in selected_indices]
+                
+                # Create word bank from unique non-empty answers
+                options = list(dict.fromkeys([ans for ans in selected_answers if ans.strip()]))
+                random.shuffle(options)
+                
+                formatted_questions["Fill in the Blanks"] = fill_questions
+            else:
+                formatted_questions["Fill in the Blanks"] = []
+                options = []
+        else:
+            options = []
+
+        # Step 9: Calculate total marks and prepare counts
+        total_marks = 0
+        counts = {}
         
-    
-    # Step 6: Handle Fill in the Blanks with random pick from all chapters
-    fib_all_questions = []
-    fib_all_answers = []
+        for qtype in formatted_questions:
+            count = len(formatted_questions[qtype])
+            counts[qtype] = count
+            total_marks += count * marks.get(qtype, 0)
 
-    # Collect all fill-in-the-blanks from all selected chapters
-    for chapter in chapters:
-        chapter_data = data.get(pub, {}).get(sub, {}).get(cls, {}).get(chapter, {})
-        fib_raw = chapter_data.get("Fill in the Blanks", [])
+        # Step 10: Render template
+        return render_template(
+            'question_paper.html',
+            subject=sub,
+            class_name=cls,  # ✅ Added class_name here
+            questions=formatted_questions,
+            marks=marks,
+            question_counts=question_counts,
+            total_marks=total_marks,
+            counts=counts,
+            fill_options=options,
+            publication=pub  # Optional: include publication info if needed
+        )
 
-        for item in fib_raw:
-            if isinstance(item, dict):
-                fib_all_questions.append(item.get("question", ""))
-                fib_all_answers.append(item.get("answer", ""))
-            elif isinstance(item, str):
-                fib_all_questions.append(item)
-                fib_all_answers.append("")
-
-    fib_count = question_counts.get("Fill in the Blanks", 0)
-
-    # Pick random questions with matching answers
-    if fib_all_questions:
-        selected_indices = random.sample(range(len(fib_all_questions)), min(fib_count, len(fib_all_questions)))
-        fill_questions = [fib_all_questions[i] for i in selected_indices]
-        selected_answers = [fib_all_answers[i] for i in selected_indices]
-    else:
-        fill_questions = []
-        selected_answers = []
-
-    # Options = all correct answers for the selected questions, shuffled
-    options = list(dict.fromkeys([ans for ans in selected_answers if ans.strip() != ""]))
-    random.shuffle(options)
-
-    # Save for template rendering
-    formatted_questions["Fill in the Blanks"] = fill_questions
-        
-        
-    # Manual questions handling
-    manual_text = request.form.get('manual_questions', '')
-    manual_mark = int(request.form.get('manual_mark', 0))
-    manual_format = request.form.get('manual_output_format', 'original')  # 'numbered' or 'original'
-
-    # Remove empty lines and strip carriage returns
-    manual_lines = [line.strip().replace('\r', '') for line in manual_text.split('\n') if line.strip()]
-
-    if manual_format == 'numbered':
-        # Number each line
-        formatted_questions["Manual Questions"] = [f"{i+1}. {line}" for i, line in enumerate(manual_lines)]
-        question_counts["Manual Questions"] = len(manual_lines)  # each line is one question
-        marks["Manual Questions"] = manual_mark
-    else:
-        # Original: all lines as one block
-        formatted_questions["Manual Questions"] = manual_lines
-        question_counts["Manual Questions"] = 1  # entire block counts as 1 question
-        marks["Manual Questions"] = manual_mark
-    qno = 1
-
-    # Step 7: Total marks
-    total_marks = sum(question_counts[qtype] * marks.get(qtype, 0) for qtype in question_counts)
-
-    return render_template(
-        'question_paper.html',
-        subject=sub,
-        questions=formatted_questions,
-        marks=marks,
-        question_counts=question_counts,
-        total_marks=total_marks,
-        qno = qno,
-        counts={qtype: len(formatted_questions[qtype]) for qtype in formatted_questions},
-        fill_options=options  # ✅ pass options here
-    )
-
-
+    except Exception as e:
+        print(f"Error generating question paper: {str(e)}")
+        import traceback
+        traceback.print_exc()  # This will show the full traceback
+        # flash(f'Error generating question paper: {str(e)}', 'error')
+        return redirect(request.referrer or url_for('index'))
 
 @app.route('/add_question', methods=['GET', 'POST'])
 def add_question():
     data = load_data()
     publications = list(data.keys())
     
+    # Initialize selected values
+    selected_pub = ''
+    selected_sub = ''
+    selected_cls = ''
+    selected_chapter = ''
+    selected_qtype = ''
+    
     if request.method == 'POST':
-        publication = request.form['publication']
-        subject = request.form['subject']
-        class_name = request.form['class']
-        chapter = request.form['chapter']
-        qtype = request.form['qtype']
+        try:
+            # Get form data with defaults
+            publication = request.form.get('publication', '').strip()
+            subject = request.form.get('subject', '').strip()
+            class_name = request.form.get('class', '').strip()
+            chapter = request.form.get('chapter', '').strip()
+            qtype = request.form.get('qtype', '').strip()
+            
+            # Store selections for persistence
+            selected_pub = publication
+            selected_sub = subject
+            selected_cls = class_name
+            selected_chapter = chapter
+            selected_qtype = qtype
+            
+            # Validate required fields
+            if not all([publication, subject, class_name, chapter, qtype]):
+                # flash('All fields are required!', 'error')
+                return render_template('add_question.html', 
+                                    publications=publications,
+                                    selected_pub=selected_pub,
+                                    selected_sub=selected_sub,
+                                    selected_cls=selected_cls,
+                                    selected_chapter=selected_chapter,
+                                    selected_qtype=selected_qtype,
+                                    data=data)
+            
+            # Initialize data structure
+            data.setdefault(publication, {}) \
+                .setdefault(subject, {}) \
+                .setdefault(class_name, {}) \
+                .setdefault(chapter, {}) \
+                .setdefault(qtype, [])
+            
+            success_message = ""
+            
+            if qtype == "Match the Following":
+                match_key = request.form.get("match_key", "").strip()
+                match_value = request.form.get("match_value", "").strip()
+                if match_key and match_value:
+                    data[publication][subject][class_name][chapter][qtype].append({match_key: match_value})
+                    success_message = f"Match pair added successfully: {match_key} → {match_value}"
+                else:
+                    # flash('Both key and value are required for Match the Following!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
+            
+            elif qtype == "Fill in the Blanks":
+                question_text = request.form.get("fib_question", "").strip()
+                answer_text = request.form.get("fib_answer", "").strip()
+                if question_text and answer_text:
+                    new_question = {"question": question_text, "answer": answer_text}
+                    data[publication][subject][class_name][chapter][qtype].append(new_question)
+                    success_message = f"Fill in the Blank question added: {question_text}"
+                else:
+                    # flash('Both question and answer are required for Fill in the Blanks!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
+                    
+            elif qtype == "True/False":
+                question_text = request.form.get("true_false_question", "").strip()
+                answer_text = request.form.get("true_false_answer", "").strip()
+                if question_text and answer_text:
+                    new_question = {"question": question_text, "answer": answer_text}
+                    data[publication][subject][class_name][chapter][qtype].append(new_question)
+                    success_message = f"True/False question added: {question_text}"
+                else:
+                    # flash('Both question and answer are required for True/False!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
 
-        data.setdefault(publication, {}) \
-            .setdefault(subject, {}) \
-            .setdefault(class_name, {}) \
-            .setdefault(chapter, {}) \
-            .setdefault(qtype, [])
+            elif qtype == "Choose the Best Answer":
+                question = request.form.get("best_answer_question", "").strip()
+                option1 = request.form.get("option1", "").strip()
+                option2 = request.form.get("option2", "").strip()
+                option3 = request.form.get("option3", "").strip()
+                option4 = request.form.get("option4", "").strip()
+                answer = request.form.get("answer", "").strip()
 
-        if qtype == "Match the Following":
-            match_key = request.form.get("match_key", "").strip()
-            match_value = request.form.get("match_value", "").strip()
-            if match_key and match_value:
-                data[publication][subject][class_name][chapter][qtype].append({match_key: match_value})
-        
-        elif qtype == "Fill in the Blanks":
-            question_text = request.form.get("fib_question", "").strip()
-            answer_text = request.form.get("fib_answer", "").strip()
-            if question_text and answer_text:
-                new_question = {"question": question_text, "answer": answer_text}
-                data[publication][subject][class_name][chapter][qtype].append(new_question)
+                if question and option1 and option2 and option3 and option4 and answer:
+                    new_q = {
+                        "question": question,
+                        "options": [option1, option2, option3, option4],
+                        "answer": answer
+                    }
+                    data[publication][subject][class_name][chapter][qtype].append(new_q)
+                    success_message = f"MCQ question added: {question}"
+                else:
+                    # flash('All fields (question, 4 options, and answer) are required for Choose the Best Answer!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
 
-        elif qtype == "Choose the Best Answer":
-            question = request.form.get("best_answer_question", "").strip()
-            option1 = request.form.get("option1", "").strip()
-            option2 = request.form.get("option2", "").strip()
-            option3 = request.form.get("option3", "").strip()
-            option4 = request.form.get("option4", "").strip()
-            answer = request.form.get("answer", "").strip()
+            elif qtype == "Full Form":
+                full_form_abbr = request.form.get("full_form_abbr", "").strip()
+                full_form_text = request.form.get("full_form_text", "").strip()
+                if full_form_abbr and full_form_text:
+                    data[publication][subject][class_name][chapter][qtype].append({full_form_abbr: full_form_text})
+                    success_message = f"Full Form added: {full_form_abbr} = {full_form_text}"
+                else:
+                    # flash('Both abbreviation and full form are required!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
 
-            if question and option1 and option2 and option3 and option4 and answer:
-                new_q = {
-                    "question": question,
-                    "options": [option1, option2, option3, option4],
-                    "answer": answer
-                }
-                data[publication][subject][class_name][chapter][qtype].append(new_q)
+            else:
+                # Handle other question types (Answer the Following, etc.)
+                question_text = request.form.get("normal_question", "").strip()
+                if question_text:
+                    lines = [line.strip() for line in question_text.split('\n') if line.strip()]
+                    data[publication][subject][class_name][chapter][qtype].extend(lines)
+                    success_message = f"{qtype} question(s) added successfully!"
+                else:
+                    # flash('Question text is required!', 'error')
+                    return render_template('add_question.html', 
+                                        publications=publications,
+                                        selected_pub=selected_pub,
+                                        selected_sub=selected_sub,
+                                        selected_cls=selected_cls,
+                                        selected_chapter=selected_chapter,
+                                        selected_qtype=selected_qtype,
+                                        data=data)
 
-        else:
-            question_text = request.form.get("normal_question", "").strip()
-            if question_text:
-                lines = [line.strip() for line in question_text.split('\n') if line.strip()]
-                data[publication][subject][class_name][chapter][qtype].extend(lines)
+            # Save data and show success
+            save_data(data)
+            # flash(success_message, 'success')
+            
+            # Redirect with parameters to preserve selections
+            return redirect(url_for('add_question', 
+                                  publication=publication,
+                                  subject=subject, 
+                                  class_name=class_name,
+                                  chapter=chapter,
+                                  qtype=qtype))
+            
+        except Exception as e:
+            # flash(f'Error adding question: {str(e)}', 'error')
+            return render_template('add_question.html', 
+                                publications=publications,
+                                selected_pub=selected_pub,
+                                selected_sub=selected_sub,
+                                selected_cls=selected_cls,
+                                selected_chapter=selected_chapter,
+                                selected_qtype=selected_qtype,
+                                data=data)
+    
+    else:
+        # GET request - get parameters for persistence
+        selected_pub = request.args.get('publication', '')
+        selected_sub = request.args.get('subject', '')
+        selected_cls = request.args.get('class_name', '')
+        selected_chapter = request.args.get('chapter', '')
+        selected_qtype = request.args.get('qtype', '')
 
-        save_data(data)
-        return redirect(url_for('add_question'))
-
-    # Pass publications to template to populate dropdown
-    return render_template('add_question.html', publications=publications)
+    # Pass publications and selected values to template
+    return render_template('add_question.html', 
+                         publications=publications,
+                         selected_pub=selected_pub,
+                         selected_sub=selected_sub,
+                         selected_cls=selected_cls,
+                         selected_chapter=selected_chapter,
+                         selected_qtype=selected_qtype,
+                         data=data)
                            
                            
 @app.route('/get_questions/<publication>/<subject>/<class_name>/<chapter>')

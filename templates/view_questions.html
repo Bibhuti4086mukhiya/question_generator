@@ -7,12 +7,8 @@
 <style>
     /* Container and Form Styling */
     .view-container {
-        /* max-width: 1200px; */
         margin: 0 auto;
         padding: 2rem;
-        /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
-        border-radius: 20px;
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
     }
 
     .view-header {
@@ -194,6 +190,21 @@
         display: inline-block;
     }
 
+    .true-false-item {
+        background: #fff8f0;
+        border-left: 3px solid #f39c12;
+    }
+
+    .true-false-answer {
+        color: #d69e2e;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        padding: 0.25rem 0.5rem;
+        background: #fffaf0;
+        border-radius: 5px;
+        display: inline-block;
+    }
+
     .match-item {
         display: flex;
         align-items: center;
@@ -273,7 +284,7 @@
     }
 </style>
 
-<div class=" w-full view-container">
+<div class="w-full view-container">
     <h2 class="view-header">📚 View Questions</h2>
 
     <div class="filter-form">
@@ -333,28 +344,68 @@
             <ul class="question-list">
                 {% if qtype == "Match the Following" %}
                     {% for pair in qlist %}
-                        {% for left, right in pair.items() %}
-                        <li class="question-item">
-                            <div class="match-item">
-                                <span class="match-left">{{ left }}</span>
-                                <span class="match-arrow">→</span>
-                                <span class="match-right">{{ right }}</span>
-                            </div>
-                        </li>
-                        {% endfor %}
+                        {% if pair is mapping %}
+                            {% for left, right in pair.items() %}
+                            <li class="question-item">
+                                <div class="match-item">
+                                    <span class="match-left">{{ left }}</span>
+                                    <span class="match-arrow">→</span>
+                                    <span class="match-right">{{ right }}</span>
+                                </div>
+                            </li>
+                            {% endfor %}
+                        {% elif pair is iterable and pair is not string %}
+                            <li class="question-item">
+                                <div class="match-item">
+                                    <span class="match-left">{{ pair[0] }}</span>
+                                    <span class="match-arrow">→</span>
+                                    <span class="match-right">{{ pair[1] }}</span>
+                                </div>
+                            </li>
+                        {% endif %}
                     {% endfor %}
 
                 {% elif qtype == "Choose the Best Answer" %}
                     {% for mcq in qlist %}
                     <li class="question-item">
-                        <div class="mcq-question">{{ mcq.question }}</div>
-                        <div class="mcq-options">
-                            <div class="mcq-option">a) {{ mcq.options[0] }}</div>
-                            <div class="mcq-option">b) {{ mcq.options[1] }}</div>
-                            <div class="mcq-option">c) {{ mcq.options[2] }}</div>
-                            <div class="mcq-option">d) {{ mcq.options[3] }}</div>
-                        </div>
-                        <div class="mcq-answer">✓ Answer: {{ mcq.answer }}</div>
+                        {% if mcq is mapping %}
+                            <div class="mcq-question">{{ mcq.question }}</div>
+                            <div class="mcq-options">
+                                {% if mcq.options %}
+                                    <div class="mcq-option">a) {{ mcq.options[0] }}</div>
+                                    <div class="mcq-option">b) {{ mcq.options[1] }}</div>
+                                    <div class="mcq-option">c) {{ mcq.options[2] }}</div>
+                                    <div class="mcq-option">d) {{ mcq.options[3] }}</div>
+                                {% else %}
+                                    <div class="mcq-option">Options not available</div>
+                                {% endif %}
+                            </div>
+                            {% if mcq.answer %}
+                            <div class="mcq-answer">✓ Answer: {{ mcq.answer }}</div>
+                            {% endif %}
+                        {% else %}
+                            <div class="mcq-question">{{ mcq }}</div>
+                            <div class="mcq-options">
+                                <div class="mcq-option">a) Option A</div>
+                                <div class="mcq-option">b) Option B</div>
+                                <div class="mcq-option">c) Option C</div>
+                                <div class="mcq-option">d) Option D</div>
+                            </div>
+                        {% endif %}
+                    </li>
+                    {% endfor %}
+
+                {% elif qtype == "True/False" %}
+                    {% for tf in qlist %}
+                    <li class="question-item true-false-item">
+                        {% if tf is mapping %}
+                            <div>{{ tf.question }}</div>
+                            {% if tf.answer %}
+                            <div class="true-false-answer">✓ Answer: {{ tf.answer }}</div>
+                            {% endif %}
+                        {% else %}
+                            <div>{{ tf }}</div>
+                        {% endif %}
                     </li>
                     {% endfor %}
 
@@ -381,6 +432,9 @@
                         <div class="fill-blank">
                             {% if q is mapping %}
                                 {{ q.question }}
+                                {% if q.answer %}
+                                <div class="true-false-answer">Answer: {{ q.answer }}</div>
+                                {% endif %}
                             {% else %}
                                 {{ q }}
                             {% endif %}
@@ -390,7 +444,20 @@
 
                 {% else %}
                     {% for q in qlist %}
-                    <li class="question-item">{{ q }}</li>
+                    <li class="question-item">
+                        {% if q is mapping %}
+                            {% if q.question %}
+                                {{ q.question }}
+                                {% if q.answer %}
+                                <div class="true-false-answer">Answer: {{ q.answer }}</div>
+                                {% endif %}
+                            {% else %}
+                                {{ q }}
+                            {% endif %}
+                        {% else %}
+                            {{ q }}
+                        {% endif %}
+                    </li>
                     {% endfor %}
                 {% endif %}
             </ul>
@@ -453,6 +520,22 @@
             });
         }
     }
+
+    // Load initial data if page is refreshed with selections
+    document.addEventListener('DOMContentLoaded', function() {
+        const pub = document.getElementById("publication").value;
+        if (pub) {
+            loadSubjects();
+            const sub = document.getElementById("subject").value;
+            if (sub) {
+                loadClasses();
+                const cls = document.getElementById("class_name").value;
+                if (cls) {
+                    loadChapters();
+                }
+            }
+        }
+    });
 </script>
 
 {% endblock %}
