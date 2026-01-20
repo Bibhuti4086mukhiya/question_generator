@@ -23,21 +23,21 @@
 
       <!-- Menu -->
       <div class="flex items-center space-x-4">
-        <a href="{{ url_for('index') }}" class="flex items-center text-gray-600 hover:text-blue-600">
+        <a href="{{ url_for('main.index') }}" class="flex items-center text-gray-600 hover:text-blue-600">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M3 12l2-2 7-7 7 7 2 2v10a1 1 0 01-1 1h-3m-6 0h6" />
           </svg> Home
         </a>
 
-        <a href="{{ url_for('add_pulication') }}" class="flex items-center text-gray-600 hover:text-blue-600">
+        <a href="{{ url_for('admin.add_pulication') }}" class="flex items-center text-gray-600 hover:text-blue-600">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 6v12m6-6H6" />
           </svg> Add Publication
         </a>
 
-        <a href="{{ url_for('add_question') }}" class="flex items-center text-gray-600 hover:text-blue-600">
+        <a href="{{ url_for('questions.add_question') }}" class="flex items-center text-gray-600 hover:text-blue-600">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M8 9c1-2 5-2 6 0 0 2-2 3-3 3-.6.1-1 .5-1 1v3" />
@@ -59,15 +59,15 @@
           </button>
           <div id="dropdownMenu"
             class="hidden absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded shadow">
-            <a href="{{ url_for('rename_page') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">Rename Publication</a>
-            <a href="{{ url_for('rename_question') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">Edit Questions</a>
-            <a href="{{ url_for('delete_question') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Questions</a>
-            <a href="{{ url_for('delete_page') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Publications</a>
-            <a href="{{ url_for('delete_question_type') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Question Types</a>
+            <a href="{{ url_for('admin.rename_page') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">Rename Publication</a>
+            <a href="{{ url_for('questions.rename_question') }}" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-100">Edit Questions</a>
+            <a href="{{ url_for('questions.delete_question') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Questions</a>
+            <a href="{{ url_for('admin.delete_page') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Publications</a>
+            <a href="{{ url_for('questions.delete_question_type') }}" class="block px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Delete Question Types</a>
           </div>
         </div>
 
-        <a href="{{ url_for('view_questions') }}" class="flex items-center text-gray-600 hover:text-blue-600">
+        <a href="{{ url_for('questions.view_questions') }}" class="flex items-center text-gray-600 hover:text-blue-600">
           <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="3" stroke-width="2"></circle>
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

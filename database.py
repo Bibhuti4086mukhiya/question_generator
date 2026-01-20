@@ -1,351 +1,78 @@
-# question_database = {
-#     "Oxford": {
-#         "Science": {
-#             "Class 3": {
-#                 "Chapter 1": {
-#                     "Fill in the Blanks": [
-#                         "Plants need ____ to make food.",
-#                         "Animals breathe using ____.",
-#                         "The sun gives us ____ and heat.",
-#                         "Water is important for ____.",
-#                         "Leaves help plants to ____."
-#                     ],
-#                     "True/False": [
-#                         "Plants make their own food. (True)",
-#                         "Animals make their own food. (False)",
-#                         "The sun is a star. (True)",
-#                         "Water is not important for life. (False)",
-#                         "Leaves breathe for plants. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Plants": "Make food"},
-#                         {"Animals": "Breathe air"},
-#                         {"Sun": "Gives light"},
-#                         {"Water": "Needed by all"},
-#                         {"Leaves": "Help plants breathe"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What do plants need to make food?",
-#                         "How do animals breathe?",
-#                         "What does the sun provide?",
-#                         "Why is water important?",
-#                         "How do leaves help plants?"
-#                     ],
-#                       "Choose the Best Answer": [
-#                         {"question": "What do plants need to make food?", "options": ["Sunlight", "Moonlight", "Sound", "Sugar"], "answer": "Sunlight"},
-#                         {"question": "What helps animals to breathe?", "options": ["Nose", "Skin", "Lungs", "Legs"], "answer": "Lungs"},
-#                         {"question": "What gives us light and heat?", "options": ["Sun", "Moon", "Stars", "Fire"], "answer": "Sun"},
-#                         {"question": "What do leaves help in?", "options": ["Flying", "Breathing", "Eating", "Sleeping"], "answer": "Breathing"},
-#                         {"question": "Why is water important?", "options": ["For fun", "For life", "For music", "For running"], "answer": "For life"}
-#                     ]
-#                 },
-#                 "Chapter 2": {
-#                     "Fill in the Blanks": [
-#                         "The heart pumps ____ around the body.",
-#                         "The brain controls ____.",
-#                         "Bones give ____ to the body.",
-#                         "Muscles help us to ____.",
-#                         "The lungs help in ____."
-#                     ],
-#                     "True/False": [
-#                         "The heart is a muscle. (True)",
-#                         "The brain is not important. (False)",
-#                         "Bones protect organs. (True)",
-#                         "Muscles cannot move the body. (False)",
-#                         "Lungs help us to breathe. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Heart": "Pumps blood"},
-#                         {"Brain": "Controls body"},
-#                         {"Bones": "Support body"},
-#                         {"Muscles": "Help movement"},
-#                         {"Lungs": "Help breathing"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What does the heart do?",
-#                         "What controls the body?",
-#                         "What do bones do?",
-#                         "How do muscles help?",
-#                         "What do lungs do?"
-#                     ],
-#                     "Choose the Best Answer": [
-#                         {"question": "What pumps blood in our body?", "options": ["Lungs", "Brain", "Heart", "Bones"], "answer": "Heart"},
-#                         {"question": "Which organ controls the body?", "options": ["Heart", "Brain", "Lungs", "Stomach"], "answer": "Brain"},
-#                         {"question": "What supports our body?", "options": ["Skin", "Bones", "Muscles", "Nerves"], "answer": "Bones"},
-#                         {"question": "What helps in movement?", "options": ["Hair", "Teeth", "Muscles", "Eyes"], "answer": "Muscles"},
-#                         {"question": "What helps us breathe?", "options": ["Stomach", "Heart", "Lungs", "Legs"], "answer": "Lungs"}
-#                     ]
-#                 },
-#                 "Chapter 3": {
-#                     "Fill in the Blanks": [
-#                         "The earth orbits the ___.",
-#                         "The moon shines by ____ the sun’s light.",
-#                         "Stars are big balls of ____.",
-#                         "Day and night happen because of the earth’s ___.",
-#                         "Gravity pulls things ___."
-#                     ],
-#                     "True/False": [
-#                         "The earth orbits the sun. (True)",
-#                         "The moon produces its own light. (False)",
-#                         "Stars are hot balls of gas. (True)",
-#                         "Day and night are caused by the moon. (False)",
-#                         "Gravity pulls objects down. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Earth": "Orbits sun"},
-#                         {"Moon": "Reflects light"},
-#                         {"Stars": "Hot gas balls"},
-#                         {"Day and Night": "Earth's rotation"},
-#                         {"Gravity": "Pulls down"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What does the earth orbit?",
-#                         "How does the moon shine?",
-#                         "What are stars made of?",
-#                         "Why do we have day and night?",
-#                         "What does gravity do?"
-#                     ]
-#                 },
-#                 "Chapter 4": {
-#                     "Fill in the Blanks": [
-#                         "Water can be a ____ or solid.",
-#                         "Ice is frozen ___.",
-#                         "Steam is water in ___.",
-#                         "Rain falls from ____. ",
-#                         "The water cycle has ____ parts."
-#                     ],
-#                     "True/False": [
-#                         "Water can be liquid, solid, or gas. (True)",
-#                         "Ice is water in liquid form. (False)",
-#                         "Steam is water vapor. (True)",
-#                         "Rain comes from clouds. (True)",
-#                         "Water cycle has two parts. (False)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Ice": "Frozen water"},
-#                         {"Steam": "Water vapor"},
-#                         {"Rain": "From clouds"},
-#                         {"Water cycle": "Has stages"},
-#                         {"Water": "Essential for life"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What states can water be in?",
-#                         "What is ice?",
-#                         "What is steam?",
-#                         "Where does rain come from?",
-#                         "How many parts does the water cycle have?"
-#                     ]
-#                 },
-#                 "Chapter 5": {
-#                     "Fill in the Blanks": [
-#                         "Electricity powers ____.",
-#                         "Batteries store ___.",
-#                         "Switches turn ____ on or off.",
-#                         "Wires carry ___.",
-#                         "Light bulbs produce ___."
-#                     ],
-#                     "True/False": [
-#                         "Electricity is energy. (True)",
-#                         "Batteries store electricity. (True)",
-#                         "Switches cannot turn off devices. (False)",
-#                         "Wires carry electricity. (True)",
-#                         "Light bulbs produce heat only. (False)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Electricity": "Powers devices"},
-#                         {"Battery": "Stores energy"},
-#                         {"Switch": "Controls power"},
-#                         {"Wire": "Carries electricity"},
-#                         {"Light bulb": "Produces light"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What does electricity do?",
-#                         "What do batteries store?",
-#                         "What do switches do?",
-#                         "What do wires do?",
-#                         "What does a light bulb produce?"
-#                     ]
-#                 }
-#             }
-#         },
-#         "Computer": {
-#             "Class 4": {
-#                 "Chapter 1": {
-#                     "Fill in the Blanks": [
-#                         "A computer processes ___.",
-#                         "The keyboard is used to ___ data.",
-#                         "A mouse helps to ___ on the screen.",
-#                         "The monitor shows ___.",
-#                         "Computers use ___ to store information."
-#                     ],
-#                     "True/False": [
-#                         "A computer can do calculations. (True)",
-#                         "A mouse is used to type. (False)",
-#                         "The monitor displays pictures and text. (True)",
-#                         "Computers cannot store data. (False)",
-#                         "The keyboard is an input device. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Keyboard": "Input device"},
-#                         {"Monitor": "Output device"},
-#                         {"Mouse": "Pointing device"},
-#                         {"CPU": "Brain of computer"},
-#                         {"Printer": "Prints documents"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What is a computer?",
-#                         "What does a keyboard do?",
-#                         "How do you use a mouse?",
-#                         "What does the monitor show?",
-#                         "Where does the computer store data?"
-#                     ],
-#                     "Full Form": [
-#                         {"CPU": "Central Processing Unit"},
-#                         {"RAM": "Random Access Memory"},
-#                         {"USB": "Universal Serial Bus"},
-#                         {"PDF": "Portable Document Format"},
-#                         {"HTML": "HyperText Markup Language"}
-#                     ]
-#                 },
-#                 "Chapter 2": {
-#                     "Fill in the Blanks": [
-#                         "Software helps the computer to ___.",
-#                         "The CPU is called the ___ of the computer.",
-#                         "We use a printer to ___ documents.",
-#                         "A scanner is used to ___ images.",
-#                         "Computers can work very ___."
-#                     ],
-#                     "True/False": [
-#                         "Software is a program. (True)",
-#                         "CPU is the computer’s brain. (True)",
-#                         "Printers scan documents. (False)",
-#                         "Scanners copy images. (True)",
-#                         "Computers are slow machines. (False)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Software": "Program"},
-#                         {"CPU": "Processor"},
-#                         {"Printer": "Prints paper"},
-#                         {"Scanner": "Copies images"},
-#                         {"Computer": "Electronic machine"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What is software?",
-#                         "What does the CPU do?",
-#                         "How do we use a printer?",
-#                         "What does a scanner do?",
-#                         "Are computers fast or slow?"
-#                     ],
-#                      "Full Form": [
-#                         {"CPU": "Central Processing Unit"},
-#                         {"RAM": "Random Access Memory"},
-#                         {"USB": "Universal Serial Bus"},
-#                         {"HTTP": "HyperText Transfer Protocol"},
-#                         {"IP": "Internet Protocol"}
-#                     ]
-#                 },
-#                 "Chapter 3": {
-#                     "Fill in the Blanks": [
-#                         "Computers use ___ to connect to the internet.",
-#                         "The internet helps us to ___ information.",
-#                         "We use browsers to ___ websites.",
-#                         "Emails are sent using ___.",
-#                         "Wi-Fi is a ___ connection."
-#                     ],
-#                     "True/False": [
-#                         "The internet connects computers worldwide. (True)",
-#                         "We cannot use the internet to learn. (False)",
-#                         "Browsers open websites. (True)",
-#                         "Emails are letters sent by post. (False)",
-#                         "Wi-Fi is a wireless connection. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Internet": "Global network"},
-#                         {"Browser": "Website viewer"},
-#                         {"Email": "Electronic mail"},
-#                         {"Wi-Fi": "Wireless connection"},
-#                         {"Website": "Online page"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What is the internet?",
-#                         "How does the internet help us?",
-#                         "What does a browser do?",
-#                         "What is an email?",
-#                         "What is Wi-Fi?"
-#                     ]
-#                 },
-#                 "Chapter 4": {
-#                     "Fill in the Blanks": [
-#                         "A file stores ___ on a computer.",
-#                         "We save work on the ___ drive.",
-#                         "The desktop shows ___ files and folders.",
-#                         "Icons help us to ___ programs.",
-#                         "We can delete files to ___ space."
-#                     ],
-#                     "True/False": [
-#                         "Files contain data. (True)",
-#                         "The desktop is a physical table. (False)",
-#                         "Icons open programs. (True)",
-#                         "Deleting files saves storage. (True)",
-#                         "We cannot save work on a computer. (False)"
-#                     ],
-#                     "Match the Following": [
-#                         {"File": "Stores data"},
-#                         {"Desktop": "Main screen"},
-#                         {"Icon": "Program shortcut"},
-#                         {"Delete": "Remove files"},
-#                         {"Drive": "Storage device"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What is a file?",
-#                         "Where do we save our work?",
-#                         "What is shown on the desktop?",
-#                         "What do icons do?",
-#                         "Why delete files?"
-#                     ]
-#                 },
-#                 "Chapter 5": {
-#                     "Fill in the Blanks": [
-#                         "A virus can ___ a computer.",
-#                         "Antivirus software helps to ___ viruses.",
-#                         "Passwords keep our data ___.",
-#                         "We should not share ___ with strangers.",
-#                         "Backing up data keeps it ___."
-#                     ],
-#                     "True/False": [
-#                         "Viruses are harmful programs. (True)",
-#                         "Antivirus removes viruses. (True)",
-#                         "Passwords protect privacy. (True)",
-#                         "It is safe to share passwords with anyone. (False)",
-#                         "Backing up data is a good habit. (True)"
-#                     ],
-#                     "Match the Following": [
-#                         {"Virus": "Harmful software"},
-#                         {"Antivirus": "Protects computer"},
-#                         {"Password": "Keeps data safe"},
-#                         {"Backup": "Copies data"},
-#                         {"Data": "Information"}
-#                     ],
-#                     "Answer the Following": [
-#                         "What is a computer virus?",
-#                         "How does antivirus help?",
-#                         "Why use passwords?",
-#                         "Should we share passwords?",
-#                         "What is data backup?"
-#                     ]
-#                 }
-#             }
-#         }
-#     },
-#     "Cambridge": {
-#         "Science": {
-#             "Class 3": {}
-#         },
-#         "Computer": {
-#             "Class 4": {}
-#         },
-#         "English": {
-#             "Class 5": {}
-#         }
-#     }
-# }
+import json
+import os
+from sqlalchemy import create_engine, Column, Integer, Text
+from sqlalchemy.orm import sessionmaker, declarative_base
+
+# Use DATABASE_URL environment variable if available (Heroku), else local SQLite
+DATABASE_URL = os.environ.get('DATABASE_URL', 'sqlite:///data.db')
+
+# Fix for Heroku's postgres:// URL (SQLAlchemy requires postgresql://)
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+Base = declarative_base()
+
+class AppData(Base):
+    __tablename__ = 'app_data'
+    id = Column(Integer, primary_key=True)
+    content = Column(Text, default='{}')
+
+class Database:
+    def __init__(self):
+        self.engine = create_engine(DATABASE_URL)
+        Base.metadata.create_all(self.engine)
+        self.Session = sessionmaker(bind=self.engine)
+        self._migrate_from_json()
+
+    def _migrate_from_json(self):
+        """Migrate existing JSON file to DB if DB is empty."""
+        session = self.Session()
+        try:
+            # Check if DB is empty
+            if session.query(AppData).count() == 0 and os.path.exists('data.json'):
+                with open('data.json', 'r', encoding='utf-8') as f:
+                    data = json.load(f)
+                record = AppData(content=json.dumps(data, ensure_ascii=False))
+                session.add(record)
+                session.commit()
+                print("Migrated data.json to database.")
+        except Exception as e:
+            print(f"Migration warning: {e}")
+        finally:
+            session.close()
+
+    def load(self):
+        """Loads data from the database."""
+        session = self.Session()
+        try:
+            record = session.query(AppData).first()
+            if record and record.content:
+                return json.loads(record.content)
+            return {}
+        except Exception as e:
+            print(f"Error loading database: {e}")
+            return {}
+        finally:
+            session.close()
+
+    def save(self, data):
+        """Saves data to the database."""
+        session = self.Session()
+        try:
+            record = session.query(AppData).first()
+            if not record:
+                record = AppData(content=json.dumps(data, ensure_ascii=False))
+                session.add(record)
+            else:
+                record.content = json.dumps(data, ensure_ascii=False)
+            session.commit()
+            return True
+        except Exception as e:
+            print(f"Error saving database: {e}")
+            session.rollback()
+            return False
+        finally:
+            session.close()
+
+# Singleton instance to be used by the app
+db = Database()

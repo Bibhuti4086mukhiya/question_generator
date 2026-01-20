@@ -13,4 +13,55 @@ add question and add cateory is connected
 
 if i added new cateory then shoul be show in question types
 
+## Local Development
 
+1.  **Install uv** (if not already installed):
+    ```bash
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    ```
+
+2.  **Run the Application**:
+    ```bash
+    # This will automatically install dependencies and run the app
+    uv run app.py
+    ```
+
+## Heroku Deployment
+
+1.  **Prepare Files**:
+    Heroku needs `gunicorn` as the web server.
+
+    ```bash
+    # Add gunicorn
+    uv add gunicorn
+    ```
+
+2.  **Deploy Commands**:
+    ```bash
+    # Login to Heroku CLI
+    heroku login
+
+    # Create a new Heroku app
+    heroku create
+
+    # Add uv buildpack
+    heroku buildpacks:add https://github.com/moneymeets/python-uv-buildpack
+
+    # Add PostgreSQL database
+    heroku addons:create heroku-postgresql:hobby-dev
+
+    # Push code to Heroku
+    git push heroku main
+
+    # Ensure web dyno is running
+    heroku ps:scale web=1
+
+    # Open the app
+    heroku open
+    ```
+
+    **Troubleshooting**:
+    If something goes wrong, check the logs:
+    ```bash
+    heroku logs --tail
+    ```

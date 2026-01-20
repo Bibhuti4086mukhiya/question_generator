@@ -23,7 +23,7 @@
 
     <!-- Main Form Card -->
     <div class="bg-white rounded-2xl shadow-xl border border-gray-200 overflow-hidden">
-        <form method="POST" action="/generate" id="question-form" class="p-8">
+        <form method="POST" action="{{ url_for('generator.generate_question_paper') }}" id="question-form" class="p-8">
 
             <!-- Selection Section -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
